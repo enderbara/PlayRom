@@ -1,11 +1,11 @@
 # Hospedagem gratuita (Render): o servidor fica no ar, sem .bat e sem PC ligado.
-# O PlayHub não tem dependências, então não há nada para instalar no build.
+# O servidor usa o pacote "ws" (instalado no build). Se faltar, cai no mini-ws.js embutido.
 services:
   - type: web
     name: playhub
     runtime: node
     plan: free
-    buildCommand: echo "sem dependencias"
+    buildCommand: npm install --omit=dev --no-audit --no-fund
     startCommand: node server.js --no-open
     healthCheckPath: /health
     envVars:
