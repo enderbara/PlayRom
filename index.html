@@ -66,7 +66,7 @@
             <div class="icon-box"><i class="fa-solid fa-file-contract"></i></div>
             <div>
               <span id="tos-t">Termos e Condições</span
-              ><small>Versão 1.0 · usa o EmulatorJS <span class="ejs-v"></span></small>
+              ><small>Versão 1.1 · usa o EmulatorJS <span class="ejs-v"></span></small>
             </div>
           </div>
           <button class="ibtn" id="tos-x" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
@@ -78,8 +78,9 @@
           </p>
           <h4>1. O que é o PlayHub</h4>
           <p>
-            O PlayHub é um player que roda jogos de PlayStation 1 (PS1) direto no navegador. Ele não
-            vem com jogos nem com BIOS: você usa os seus próprios arquivos.
+            O PlayHub é um player que roda jogos de PlayStation 1 (PS1), Mega Drive e Atari (2600/7800)
+            direto no navegador. Ele não vem com jogos nem com BIOS, não indica onde baixá-los e não
+            os hospeda: você usa os seus próprios arquivos.
           </p>
           <h4>2. Créditos e versão do emulador</h4>
           <p>
@@ -94,20 +95,24 @@
             <a href="https://github.com/EmulatorJS/EmulatorJS" target="_blank" rel="noopener"
               >GitHub</a
             >), licenciado sob a <b>GNU GPL v3</b>. O EmulatorJS é uma interface web para o
-            <b>RetroArch</b>/libretro, e o PS1 roda com o núcleo <b>PCSX-ReARMed</b>. Todo o mérito
+            <b>RetroArch</b>/libretro, e cada console roda com um núcleo próprio do libretro (no PS1, o <b>PCSX-ReARMed</b>), cada um
+            com a sua licença. Todo o mérito
             da emulação é dos seus autores e colaboradores. O PlayHub não altera nem redistribui
             esse código: ele é carregado do CDN oficial (cdn.emulatorjs.org) e a versão é fixa, para
             o crédito acima ser sempre verdadeiro.
           </p>
           <h4>3. Sem vínculo com empresas</h4>
           <p>
-            O PlayHub não tem ligação, aprovação ou patrocínio da Sony, do EmulatorJS, do RetroArch
-            ou de qualquer produtora. “PlayStation” e os nomes dos jogos são marcas dos seus donos.
+            O PlayHub não tem ligação, aprovação ou patrocínio da Sony, da Sega, da Atari, do
+            EmulatorJS, do RetroArch ou de qualquer produtora. “PlayStation”, “Mega Drive”, “Atari”
+            e os nomes dos jogos são marcas dos seus donos, citadas só para dizer com o que o
+            player é compatível.
           </p>
           <h4>4. Jogos e BIOS: sua responsabilidade</h4>
           <p>
             O EmulatorJS e o PlayHub não fornecem jogos nem BIOS. Use apenas jogos que você possui e
-            copiou dos seus próprios discos. Baixar ou compartilhar jogos protegidos por direitos
+            copiou dos seus próprios discos ou cartuchos. A BIOS também deve ser a do seu próprio
+            aparelho. Baixar ou compartilhar jogos protegidos por direitos
             autorais pode ser crime e violar as leis do seu país, e isso é responsabilidade
             exclusiva de quem faz.
           </p>
@@ -134,7 +139,7 @@
             entre os jogadores é direta (WebRTC), com servidores STUN do Google e, se a conexão
             direta falhar, um servidor TURN público (openrelay.metered.ca) que repassa os dados. O
             outro jogador pode ver o seu IP. O vídeo e o som do jogo passam do anfitrião para o
-            convidado. Jogue só com quem você conhece.
+            convidado, então só transmita jogos que você possui e jogue só com quem você conhece.
           </p>
           <h4>8. Notificações</h4>
           <p>São opcionais e só servem para avisar que o jogo terminou de carregar.</p>
@@ -148,6 +153,13 @@
           <p>
             Estes termos podem mudar. Quando mudarem, você será avisado e precisará aceitar de novo.
             Você pode relê-los em Configurações > Sobre.
+          </p>
+          <h4>11. Contato e direitos autorais</h4>
+          <p>
+            Se você é titular de direitos e acredita que algo no PlayHub viola os seus direitos, ou
+            tem qualquer dúvida sobre estes termos, escreva para
+            <a href="mailto:enderbara8@gmail.com">enderbara8@gmail.com</a>. Vamos analisar e
+            responder o quanto antes.
           </p>
           <p style="opacity: 0.7">
             Este texto é informativo e não substitui aconselhamento jurídico.
@@ -761,9 +773,9 @@
             </div>
             <div class="pane" id="pane-sobre">
               <div class="about">
-                <b style="color: #fff">PlayHub</b><br />Emulador de PlayStation 1 (PS1) no
-                navegador, com base no <b>EmulatorJS <span class="ejs-v"></span></b> (GPL-3.0),
-                RetroArch e o núcleo PCSX-ReARMed. Seus jogos nunca saem do seu aparelho.
+                <b style="color: #fff">PlayHub</b><br />Emulador de PlayStation 1, Mega Drive e Atari no
+                navegador, com base no <b>EmulatorJS <span class="ejs-v"></span></b> (GPL-3.0)
+                e no RetroArch/libretro. Seus jogos nunca saem do seu aparelho.
               </div>
               <div class="row">
                 <div>
