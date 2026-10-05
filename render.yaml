@@ -12,4 +12,4 @@ services:
       - key: NO_OPEN
         value: "1"
       # Opcional, mas MUITO recomendado para jogar em 4G/5G: servidor TURN próprio (veja LEIA-ME).
-      # Crie a variável PLAYHUB_ICE no painel do Render com o JSON da lista de servidores.
+      # Crie a variável PLAYROM_ICE no painel do Render com o JSON da lista de servidores.
