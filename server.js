@@ -70,8 +70,6 @@ const FILES = {
   "multiplayer.js": "text/javascript; charset=utf-8",
   "optimizer.js": "text/javascript; charset=utf-8",
 };
-for (const b of ["scph5501", "scph1001", "scph7001", "scph101", "scph5500", "scph5502"])
-  FILES[b + ".bin"] = "application/octet-stream";
 const LAN_IPS = () =>
   Object.values(require("os").networkInterfaces())
     .flat()
