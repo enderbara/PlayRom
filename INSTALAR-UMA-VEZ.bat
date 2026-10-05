@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title PlayHub - Instalacao unica
+title PlayRom.io - Instalacao unica
 cd /d "%~dp0"
 
 where node >nul 2>nul
@@ -27,7 +27,7 @@ if not exist "node_modules\ws" (
 )
 
 echo.
-echo  Ligando o servidor do PlayHub e configurando para iniciar com o Windows...
+echo  Ligando o servidor do PlayRom.io e configurando para iniciar com o Windows...
 echo.
 node server.js --instalar
 echo.
