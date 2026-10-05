@@ -3,7 +3,7 @@
 /*
  * Otimização de rede do multiplayer
  * ---------------------------------
- * No PlayHub o anfitrião roda o jogo e envia o VÍDEO para o convidado (WebRTC).
+ * No PlayRom.io o anfitrião roda o jogo e envia o VÍDEO para o convidado (WebRTC).
  * Antes, o vídeo saía sempre travado em 6 Mbps / 60 FPS: ótimo no Wi-Fi, péssimo em 3G/4G/5G,
  * que perdem pacotes e deixam a imagem congelando.
  *
