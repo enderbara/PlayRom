@@ -270,7 +270,35 @@ const con = () => CONSOLES[SYS] || CONSOLES.ps1,
     atari: { B: "FIRE", SELECT: "SELECT", START: "RESET" },
   };
 /* ===== Seletor de console (carrossel: o do centro é grande, os lados ficam menores e transparentes) ===== */
-const CF = { pos: 0, keys: [], drag: null, bound: !1, moved: !1 };
+const CF = { pos: 0, keys: [], drag: null, bound: !1, moved: !1 },
+  CF_CSS = `
+#view-home .cf{position:relative;margin-top:6px}
+#view-home .home-grid.mp-hub{display:block;position:relative;height:clamp(300px,50vh,360px);margin:8px 0 0;perspective:1200px;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;grid-template-columns:none}
+#view-home .home-grid.dragging{cursor:grabbing}
+#view-home .cf-card{position:absolute;left:50%;top:50%;width:min(310px,66vw);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:34px 20px 26px;background:var(--card,#111);border:1px solid var(--line,#2a2a2a);border-radius:24px;color:inherit;will-change:transform,opacity;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease,border-color .3s,box-shadow .4s;-webkit-tap-highlight-color:transparent;outline:0}
+#view-home .home-grid.dragging .cf-card{transition:border-color .3s,box-shadow .4s}
+#view-home .cf-card.active{border-color:#fb333399;box-shadow:0 20px 44px #fb333326;cursor:pointer}
+#view-home .cf-card .icon-box{width:74px;height:74px;margin-bottom:8px;font-size:1.9rem;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+#view-home .cf-card.active .icon-box{transform:scale(1.08)}
+#view-home .cf-card h3{font-size:1.3rem;margin:0}
+#view-home .cf-card p{margin:0;color:var(--muted,#999);font-size:.88rem}
+#view-home .cf-card .on{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:.8rem;color:var(--muted,#999)}
+#view-home .cf-card .on i{color:#3ddc84}
+#view-home .cf-card .on b{color:#fff}
+#view-home .cf-card .cf-go{margin-top:14px;padding:9px 22px;border-radius:999px;background:#fb3333;color:#fff;font-size:.85rem;font-weight:600;opacity:0;transform:translateY(6px);transition:opacity .35s ease,transform .45s cubic-bezier(.22,1,.36,1)}
+#view-home .cf-card.active .cf-go{opacity:1;transform:none}
+#view-home .cf-arrow{position:absolute;top:calc(clamp(300px,50vh,360px) / 2 - 8px);z-index:20;width:44px;height:44px;padding:0;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line,#2a2a2a);background:var(--card,#111);color:#fff;cursor:pointer;transition:opacity .2s,border-color .2s}
+#view-home .cf-arrow:hover:not(:disabled){border-color:#fb333399}
+#view-home .cf-arrow:disabled{opacity:.25;cursor:default}
+#view-home .cf-prev{left:0}
+#view-home .cf-next{right:0}
+#view-home .cf-dots{display:flex;justify-content:center;gap:8px;margin-top:14px}
+#view-home .cf-dot{width:8px;height:8px;padding:0;border:0;border-radius:8px;background:#ffffff33;cursor:pointer;transition:width .3s cubic-bezier(.22,1,.36,1),background .3s}
+#view-home .cf-dot.active{width:26px;background:#fb3333}
+#view-home .cf-hint{text-align:center;margin-top:12px;font-size:.78rem;color:var(--muted,#999);opacity:.8}
+@media (hover:none),(max-width:700px){#view-home .cf-arrow{display:none}}
+body.reduce-anim #view-home .cf-card,body.reduce-anim #view-home .cf-card *{transition-duration:.01ms!important}
+`;
 function cfRender() {
   const g = $("#home-grid");
   if (!g) return;
@@ -340,7 +368,8 @@ function cfBind(g) {
     if (!CF.moved) return;
     /* a velocidade do dedo empurra um pouco além, mas nunca passa mais de 1 card */
     const push = Math.max(-1, Math.min(1, (-d.v * 220) / d.w));
-    cfGo(Math.round(CF.pos + push));
+    const from = Math.round(d.p);
+    cfGo(Math.max(from - 1, Math.min(from + 1, Math.round(CF.pos + push))));
     setTimeout(() => (CF.moved = !1), 0);
   };
   g.addEventListener("pointerup", end);
@@ -387,6 +416,12 @@ function renderHome() {
   if (!g) return;
   g.textContent = "";
   CF.keys = Object.keys(CONSOLES);
+  if (!document.getElementById("cf-style")) {
+    const st = document.createElement("style");
+    st.id = "cf-style";
+    st.textContent = CF_CSS;
+    document.head.appendChild(st);
+  }
   const wrap = g.parentNode;
   wrap.classList.add("cf");
   let dots = wrap.querySelector(".cf-dots");
@@ -405,6 +440,10 @@ function renderHome() {
     g.before(pv);
     g.after(nx);
     wrap.appendChild(dots);
+    const ht = document.createElement("div");
+    ht.className = "cf-hint";
+    ht.textContent = "Deslize para os lados para trocar de console";
+    wrap.appendChild(ht);
   }
   dots.textContent = "";
   CF.keys.forEach((k, i) => {
@@ -415,7 +454,7 @@ function renderHome() {
     b.dataset.i = i;
     b.setAttribute("role", "button");
     b.innerHTML =
-      '<div class="icon-box"><i class="fa-solid ' + c.icon + '"></i></div><h3></h3><p></p><div class="on" data-on="' + k + '"><i class="fa-solid fa-user"></i><b>0</b><span>Pessoas online</span></div>';
+      '<div class="icon-box"><i class="fa-solid ' + c.icon + '"></i></div><h3></h3><p></p><div class="on" data-on="' + k + '"><i class="fa-solid fa-user"></i><b>0</b><span>Pessoas online</span></div><div class="cf-go">Entrar</div>';
     b.querySelector("h3").textContent = c.name;
     b.querySelector("p").textContent = n + " jogo(s)";
     g.appendChild(b);
