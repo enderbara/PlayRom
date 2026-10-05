@@ -36,7 +36,7 @@ for (const f of order) {
     console.error("Não achei " + tag + " no index.html");
     process.exit(1);
   }
-  const pre = first && site ? "<script>window.__PLAYHUB_SITE__=" + JSON.stringify(site) + ";</script>\n" : "";
+  const pre = first && site ? "<script>window.__PLAYROM_SITE__=" + JSON.stringify(site) + ";</script>\n" : "";
   first = false;
   html = html.replace(tag, () => pre + "<script>\n" + safe(rd(f)) + "\n</script>");
 }
