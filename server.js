@@ -16,7 +16,7 @@ if (process.argv.includes("--instalar") || process.argv.includes("--desinstalar"
     "Start Menu",
     "Programs",
     "Startup",
-    "PlayHub-servidor.vbs",
+    "PlayRom-servidor.vbs",
   );
   if (process.argv.includes("--desinstalar")) {
     try {
@@ -53,7 +53,7 @@ if (process.argv.includes("--instalar") || process.argv.includes("--desinstalar"
     })
     .unref();
   console.log(
-    "Pronto! O servidor do PlayHub já está rodando em segundo plano e vai ligar sozinho sempre que o Windows iniciar.",
+    "Pronto! O servidor do PlayRom.io já está rodando em segundo plano e vai ligar sozinho sempre que o Windows iniciar.",
   );
   console.log("Agora é só abrir o index.html no Chrome.");
   console.log("Para desfazer: node server.js --desinstalar");
@@ -70,6 +70,8 @@ const FILES = {
   "multiplayer.js": "text/javascript; charset=utf-8",
   "optimizer.js": "text/javascript; charset=utf-8",
 };
+for (const b of ["scph5501", "scph1001", "scph7001", "scph101", "scph5500", "scph5502"])
+  FILES[b + ".bin"] = "application/octet-stream";
 const LAN_IPS = () =>
   Object.values(require("os").networkInterfaces())
     .flat()
@@ -315,7 +317,7 @@ setInterval(
 );
 server.on("error", (e) => {
   if (e.code === "EADDRINUSE") {
-    console.log("O PlayHub já está rodando na porta " + PORT + ". Abrindo no navegador...");
+    console.log("O PlayRom.io já está rodando na porta " + PORT + ". Abrindo no navegador...");
     openBrowser("http://localhost:" + PORT);
     setTimeout(() => process.exit(0), 800);
     return;
@@ -328,7 +330,7 @@ server.listen(PORT, () => {
     .flat()
     .filter((i) => i && i.family === "IPv4" && !i.internal)
     .map((i) => i.address);
-  console.log("PlayHub multiplayer rodando.");
+  console.log("PlayRom.io multiplayer rodando.");
   console.log("  Neste computador: http://localhost:" + PORT);
   ips.forEach((ip) => console.log("  Outros aparelhos na rede: http://" + ip + ":" + PORT));
   console.log("\nDeixe esta janela aberta enquanto estiver jogando. Feche-a para encerrar.");
