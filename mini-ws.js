@@ -143,4 +143,22 @@ class WebSocketServer extends EventEmitter {
     });
   }
 }
+
 module.exports = { WebSocketServer };
+
+// Inicialização automática para execução direta no Render / Node.js
+if (require.main === module) {
+  const http = require("http");
+  const PORT = process.env.PORT || 8080;
+
+  const server = http.createServer((req, res) => {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Servidor WebSocket PlayHub Ativo\n");
+  });
+
+  new WebSocketServer({ server });
+
+  server.listen(PORT, () => {
+    console.log(`Servidor PlayHub rodando na porta ${PORT}`);
+  });
+}
