@@ -269,21 +269,169 @@ const con = () => CONSOLES[SYS] || CONSOLES.ps1,
     md: { Y: "A", B: "B", A: "C", L: "X", X: "Y", R: "Z", START: "START", SELECT: "MODE" },
     atari: { B: "FIRE", SELECT: "SELECT", START: "RESET" },
   };
+/* ===== Seletor de console (carrossel: o do centro é grande, os lados ficam menores e transparentes) ===== */
+const CF = { pos: 0, keys: [], drag: null, bound: !1, moved: !1 };
+function cfRender() {
+  const g = $("#home-grid");
+  if (!g) return;
+  const max = CF.keys.length - 1;
+  CF.pos = Math.max(-0.35, Math.min(max + 0.35, CF.pos));
+  [...g.querySelectorAll(".cf-card")].forEach((el, i) => {
+    const d = i - CF.pos,
+      a = Math.min(Math.abs(d), 2.2),
+      sign = d < 0 ? -1 : 1,
+      x = sign * (a <= 1 ? a * 78 : 78 + (a - 1) * 40);
+    el.style.transform =
+      "translate(-50%,-50%) translateX(" + x + "%) scale(" + (1 - 0.3 * Math.min(a, 1.6)).toFixed(3) + ") rotateY(" + (-sign * Math.min(a, 1) * 14).toFixed(1) + "deg)";
+    el.style.opacity = Math.max(0, 1 - 0.58 * Math.min(a, 1.7)).toFixed(3);
+    el.style.zIndex = String(10 - Math.round(a * 3));
+    const on = Math.abs(d) < 0.5;
+    el.classList.toggle("active", on);
+    el.tabIndex = on ? 0 : -1;
+    el.setAttribute("aria-hidden", on || a < 1.2 ? "false" : "true");
+  });
+  const at = Math.max(0, Math.min(max, Math.round(CF.pos)));
+  [...g.parentNode.querySelectorAll(".cf-dot")].forEach((el, i) => el.classList.toggle("active", i === at));
+  const pv = g.parentNode.querySelector(".cf-prev"),
+    nx = g.parentNode.querySelector(".cf-next");
+  pv && (pv.disabled = at <= 0);
+  nx && (nx.disabled = at >= max);
+}
+function cfGo(i) {
+  CF.pos = Math.max(0, Math.min(CF.keys.length - 1, i));
+  cfRender();
+}
+function cfBind(g) {
+  if (CF.bound) return;
+  CF.bound = !0;
+  const step = () => (g.querySelector(".cf-card") ? g.querySelector(".cf-card").offsetWidth * 0.78 : 240);
+  g.addEventListener("pointerdown", (e) => {
+    if (e.button > 0) return;
+    CF.drag = { x: e.clientX, p: CF.pos, t: performance.now(), lx: e.clientX, lt: performance.now(), v: 0, id: e.pointerId, w: step() };
+    CF.moved = !1;
+  });
+  g.addEventListener("pointermove", (e) => {
+    const d = CF.drag;
+    if (!d || d.id !== e.pointerId) return;
+    const dx = e.clientX - d.x;
+    if (!CF.moved && Math.abs(dx) < 7) return;
+    if (!CF.moved) {
+      CF.moved = !0;
+      g.classList.add("dragging");
+      try {
+        g.setPointerCapture(e.pointerId);
+      } catch {}
+    }
+    const now = performance.now();
+    d.v = (e.clientX - d.lx) / Math.max(1, now - d.lt);
+    d.lx = e.clientX;
+    d.lt = now;
+    CF.pos = d.p - dx / d.w;
+    cfRender();
+  });
+  const end = (e) => {
+    const d = CF.drag;
+    if (!d || d.id !== e.pointerId) return;
+    CF.drag = null;
+    g.classList.remove("dragging");
+    try {
+      g.releasePointerCapture(e.pointerId);
+    } catch {}
+    if (!CF.moved) return;
+    /* a velocidade do dedo empurra um pouco além, mas nunca passa mais de 1 card */
+    const push = Math.max(-1, Math.min(1, (-d.v * 220) / d.w));
+    cfGo(Math.round(CF.pos + push));
+    setTimeout(() => (CF.moved = !1), 0);
+  };
+  g.addEventListener("pointerup", end);
+  g.addEventListener("pointercancel", end);
+  g.addEventListener("click", (e) => {
+    if (CF.moved) return;
+    const c = e.target.closest(".cf-card");
+    if (!c) return;
+    const i = +c.dataset.i;
+    if (i === Math.round(CF.pos)) setSys(CF.keys[i]);
+    else cfGo(i);
+  });
+  g.addEventListener(
+    "wheel",
+    (e) => {
+      const v = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : 0;
+      if (!v) return;
+      e.preventDefault();
+      const now = performance.now();
+      if (now - (CF.wt || 0) < 350) return;
+      CF.wt = now;
+      cfGo(Math.round(CF.pos) + (v > 0 ? 1 : -1));
+    },
+    { passive: !1 },
+  );
+  const pn = g.parentNode;
+  pn.querySelector(".cf-prev").onclick = () => cfGo(Math.round(CF.pos) - 1);
+  pn.querySelector(".cf-next").onclick = () => cfGo(Math.round(CF.pos) + 1);
+  document.addEventListener("keydown", (e) => {
+    const v = $("#view-home");
+    if (!v || !v.classList.contains("show") || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "")) return;
+    if (document.querySelector("#tos:not(.hidden), #gs:not(.hidden), #sv:not(.hidden), #rs:not(.hidden), #tp:not(.hidden), #mpl:not(.hidden), #mpc:not(.hidden), #sh:not(.hidden)")) return;
+    if (e.key === "ArrowLeft") (e.preventDefault(), cfGo(Math.round(CF.pos) - 1));
+    else if (e.key === "ArrowRight") (e.preventDefault(), cfGo(Math.round(CF.pos) + 1));
+    else if (e.key === "Enter" && !/^(BUTTON|A)$/.test((e.target && e.target.tagName) || "")) {
+      e.preventDefault();
+      setSys(CF.keys[Math.round(CF.pos)]);
+    }
+  });
+}
 function renderHome() {
   const g = $("#home-grid");
   if (!g) return;
   g.textContent = "";
-  Object.entries(CONSOLES).forEach(([k, c]) => {
-    const n = library.filter((x) => (x.sys || "ps1") === k).length,
-      b = document.createElement("button");
-    b.type = "button";
-    b.className = "mp-opt";
-    b.innerHTML = '<div class="icon-box"><i class="fa-solid ' + c.icon + '"></i></div><h3></h3><p></p><div class="on" data-on="' + k + '"><i class="fa-solid fa-user"></i><b>0</b><span>Pessoas online</span></div>';
+  CF.keys = Object.keys(CONSOLES);
+  const wrap = g.parentNode;
+  wrap.classList.add("cf");
+  let dots = wrap.querySelector(".cf-dots");
+  if (!dots) {
+    const pv = document.createElement("button"),
+      nx = document.createElement("button");
+    pv.type = nx.type = "button";
+    pv.className = "cf-arrow cf-prev";
+    nx.className = "cf-arrow cf-next";
+    pv.setAttribute("aria-label", "Console anterior");
+    nx.setAttribute("aria-label", "Próximo console");
+    pv.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+    nx.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+    dots = document.createElement("div");
+    dots.className = "cf-dots";
+    g.before(pv);
+    g.after(nx);
+    wrap.appendChild(dots);
+  }
+  dots.textContent = "";
+  CF.keys.forEach((k, i) => {
+    const c = CONSOLES[k],
+      n = library.filter((x) => (x.sys || "ps1") === k).length,
+      b = document.createElement("div");
+    b.className = "cf-card";
+    b.dataset.i = i;
+    b.setAttribute("role", "button");
+    b.innerHTML =
+      '<div class="icon-box"><i class="fa-solid ' + c.icon + '"></i></div><h3></h3><p></p><div class="on" data-on="' + k + '"><i class="fa-solid fa-user"></i><b>0</b><span>Pessoas online</span></div>';
     b.querySelector("h3").textContent = c.name;
     b.querySelector("p").textContent = n + " jogo(s)";
-    b.onclick = () => setSys(k);
     g.appendChild(b);
+    const d = document.createElement("button");
+    d.type = "button";
+    d.className = "cf-dot";
+    d.setAttribute("aria-label", c.name);
+    d.onclick = () => cfGo(i);
+    dots.appendChild(d);
   });
+  cfBind(g);
+  const at = SYS ? CF.keys.indexOf(SYS) : -1;
+  CF.pos = at >= 0 ? at : Math.max(0, Math.min(CF.keys.length - 1, Math.round(CF.pos)));
+  g.classList.add("dragging");
+  cfRender();
+  requestAnimationFrame(() => requestAnimationFrame(() => g.classList.remove("dragging")));
   updateOnline();
 }
 function setSys(k, quiet) {
