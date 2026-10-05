@@ -1,8 +1,8 @@
 {
-  "name": "playhub-server",
+  "name": "playrom-server",
   "version": "1.0.0",
   "private": true,
-  "description": "Servidor de salas multiplayer do PlayHub (descoberta de salas + sinalização WebRTC)",
+  "description": "Servidor de salas multiplayer do PlayRom.io (descoberta de salas + sinalização WebRTC)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
