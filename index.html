@@ -1,14 +1,13 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta name="google-site-verification" content="SGflj4VPNSmy7_lRwITz7e9svLUcd0LGKH98mNYxQcY" />
     <meta charset="UTF-8" />
     <meta
       name="viewport"
       content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"
     />
     <meta name="theme-color" content="#080808" />
-    <title>PlayHub</title>
+    <title>PlayRom.io</title>
     <link rel="icon" href="logo.png" />
     <link rel="preconnect" href="https://cdn.emulatorjs.org" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.emulatorjs.org" />
@@ -22,7 +21,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link rel="stylesheet" href="style.css?v=20261006" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <svg width="0" height="0" style="position: absolute" aria-hidden="true">
@@ -42,7 +41,7 @@
           <circle class="ld-trk" cx="50" cy="50" r="46" />
           <circle class="ld-arc" cx="50" cy="50" r="46" />
         </svg>
-        <div class="ld-name">PlayHub</div>
+        <div class="ld-name">PlayRom<span class="io" style="font-size:.55em;font-weight:600;color:#2c2c2c;margin-left:1px">.io</span></div>
         <div class="ld-bar"><i class="ld-fill"></i></div>
         <div class="ld-pct"><b>0</b>%</div>
         <div class="ld-st"></div>
@@ -51,7 +50,7 @@
         src="logo.png"
         class="logo-mark"
         id="splash-logo"
-        alt="Logo PlayHub"
+        alt="Logo PlayRom.io"
         onerror="
           this.onerror = null;
           this.src =
@@ -66,21 +65,20 @@
             <div class="icon-box"><i class="fa-solid fa-file-contract"></i></div>
             <div>
               <span id="tos-t">Termos e Condições</span
-              ><small>Versão 1.1 · usa o EmulatorJS <span class="ejs-v"></span></small>
+              ><small>Versão 1.0 · usa o EmulatorJS <span class="ejs-v"></span></small>
             </div>
           </div>
           <button class="ibtn" id="tos-x" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="tos-body">
           <p>
-            Leia com calma. Aqui explicamos, sem juridiquês, o que é o PlayHub, de onde vem o
+            Leia com calma. Aqui explicamos, sem juridiquês, o que é o PlayRom.io, de onde vem o
             emulador, o que fica salvo no seu aparelho e quais são as suas responsabilidades.
           </p>
-          <h4>1. O que é o PlayHub</h4>
+          <h4>1. O que é o PlayRom.io</h4>
           <p>
-            O PlayHub é um player que roda jogos de PlayStation 1 (PS1), Mega Drive e Atari (2600/7800)
-            direto no navegador. Ele não vem com jogos nem com BIOS, não indica onde baixá-los e não
-            os hospeda: você usa os seus próprios arquivos.
+            O PlayRom.io é um player que roda jogos de PlayStation 1 (PS1) direto no navegador. Ele não
+            vem com jogos nem com BIOS: você usa os seus próprios arquivos.
           </p>
           <h4>2. Créditos e versão do emulador</h4>
           <p>
@@ -95,31 +93,27 @@
             <a href="https://github.com/EmulatorJS/EmulatorJS" target="_blank" rel="noopener"
               >GitHub</a
             >), licenciado sob a <b>GNU GPL v3</b>. O EmulatorJS é uma interface web para o
-            <b>RetroArch</b>/libretro, e cada console roda com um núcleo próprio do libretro (no PS1, o <b>PCSX-ReARMed</b>), cada um
-            com a sua licença. Todo o mérito
-            da emulação é dos seus autores e colaboradores. O PlayHub não altera nem redistribui
+            <b>RetroArch</b>/libretro, e o PS1 roda com o núcleo <b>PCSX-ReARMed</b>. Todo o mérito
+            da emulação é dos seus autores e colaboradores. O PlayRom.io não altera nem redistribui
             esse código: ele é carregado do CDN oficial (cdn.emulatorjs.org) e a versão é fixa, para
             o crédito acima ser sempre verdadeiro.
           </p>
           <h4>3. Sem vínculo com empresas</h4>
           <p>
-            O PlayHub não tem ligação, aprovação ou patrocínio da Sony, da Sega, da Atari, do
-            EmulatorJS, do RetroArch ou de qualquer produtora. “PlayStation”, “Mega Drive”, “Atari”
-            e os nomes dos jogos são marcas dos seus donos, citadas só para dizer com o que o
-            player é compatível.
+            O PlayRom.io não tem ligação, aprovação ou patrocínio da Sony, do EmulatorJS, do RetroArch
+            ou de qualquer produtora. “PlayStation” e os nomes dos jogos são marcas dos seus donos.
           </p>
           <h4>4. Jogos e BIOS: sua responsabilidade</h4>
           <p>
-            O EmulatorJS e o PlayHub não fornecem jogos nem BIOS. Use apenas jogos que você possui e
-            copiou dos seus próprios discos ou cartuchos. A BIOS também deve ser a do seu próprio
-            aparelho. Baixar ou compartilhar jogos protegidos por direitos
+            O EmulatorJS e o PlayRom.io não fornecem jogos nem BIOS. Use apenas jogos que você possui e
+            copiou dos seus próprios discos. Baixar ou compartilhar jogos protegidos por direitos
             autorais pode ser crime e violar as leis do seu país, e isso é responsabilidade
             exclusiva de quem faz.
           </p>
           <h4>5. Seus arquivos e privacidade</h4>
           <p>
             Os jogos <b>não são enviados</b> a nenhum servidor: são lidos do seu computador ou
-            celular. O PlayHub guarda só neste navegador (IndexedDB e localStorage): configurações,
+            celular. O PlayRom.io guarda só neste navegador (IndexedDB e localStorage): configurações,
             favoritos, saves, nomes dos arquivos e o acesso à sua pasta. Não há conta, cadastro nem
             rastreamento. Em Configurações > Biblioteca você apaga tudo quando quiser, e limpar os
             dados do navegador também remove tudo.
@@ -134,18 +128,18 @@
           <p>
             Cada sala tem no máximo <b>2 jogadores</b>. Qualquer pessoa pode ver as salas abertas, e
             você também pode convidar por link ou código. A descoberta de salas usa o servidor do
-            PlayHub (se existir) ou corretores MQTT públicos (broker.emqx.io, broker.hivemq.com,
+            PlayRom.io (se existir) ou corretores MQTT públicos (broker.emqx.io, broker.hivemq.com,
             test.mosquitto.org), que veem nome da sala, jogo e o IP de quem se conecta. A conexão
             entre os jogadores é direta (WebRTC), com servidores STUN do Google e, se a conexão
             direta falhar, um servidor TURN público (openrelay.metered.ca) que repassa os dados. O
             outro jogador pode ver o seu IP. O vídeo e o som do jogo passam do anfitrião para o
-            convidado, então só transmita jogos que você possui e jogue só com quem você conhece.
+            convidado. Jogue só com quem você conhece.
           </p>
           <h4>8. Notificações</h4>
           <p>São opcionais e só servem para avisar que o jogo terminou de carregar.</p>
           <h4>9. Sem garantias</h4>
           <p>
-            O PlayHub é oferecido “como está”. Alguns jogos podem travar, ficar sem som ou perder
+            O PlayRom.io é oferecido “como está”. Alguns jogos podem travar, ficar sem som ou perder
             saves, e não nos responsabilizamos por perdas ou danos ao usar o site. Faça backup dos
             seus saves.
           </p>
@@ -153,13 +147,6 @@
           <p>
             Estes termos podem mudar. Quando mudarem, você será avisado e precisará aceitar de novo.
             Você pode relê-los em Configurações > Sobre.
-          </p>
-          <h4>11. Contato e direitos autorais</h4>
-          <p>
-            Se você é titular de direitos e acredita que algo no PlayHub viola os seus direitos, ou
-            tem qualquer dúvida sobre estes termos, escreva para
-            <a href="mailto:enderbara8@gmail.com">enderbara8@gmail.com</a>. Vamos analisar e
-            responder o quanto antes.
           </p>
           <p style="opacity: 0.7">
             Este texto é informativo e não substitui aconselhamento jurídico.
@@ -175,7 +162,7 @@
     <main id="setup" class="hidden">
       <div class="step-card enter" id="st1">
         <div class="icon-box"><i class="fa-solid fa-gamepad"></i></div>
-        <h2 class="step-title">Bem-vindo ao <span class="red">PlayHub</span></h2>
+        <h2 class="step-title">Bem-vindo ao <span class="red">PlayRom</span><span class="io" style="font-size:.55em;font-weight:600;color:#2c2c2c;margin-left:1px">.io</span></h2>
         <p class="step-desc">Emulação de PlayStation 1, Mega Drive e Atari diretamente no seu navegador.</p>
         <button class="btn block" id="btn-start">
           <span>Configurar</span><i class="fa-solid fa-arrow-right"></i>
@@ -201,7 +188,7 @@
           </div>
         </div>
         <p class="step-desc" style="font-size: 0.8rem">
-          As 3 pastas são obrigatórias, com esses nomes. Sem elas o PlayHub não aceita.
+          As 3 pastas são obrigatórias, com esses nomes. Sem elas o PlayRom.io não aceita.
         </p>
         <button class="btn block" id="btn-pick">
           <i class="fa-solid fa-folder-plus"></i><span>Selecionar Pasta</span>
@@ -245,13 +232,13 @@
         <img
           id="brand-logo"
           src="logo.png"
-          alt="PlayHub"
+          alt="PlayRom.io"
           onerror="
             this.onerror = null;
             this.src =
               'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZiMzMzMyI+PHBhdGggZD0iTTIxIDEyTDMgMjBWMTRMMTggMTJMMyAxMFY0TDIxIDEyWiIvPjwvc3ZnPg==';
           "
-        />Play<span class="red">Hub</span>
+        />Play<span class="red">Rom</span><span class="io" style="font-size:.55em;font-weight:600;color:#2c2c2c;margin-left:1px">.io</span>
       </div>
       <nav class="tabs" id="tabs">
         <span class="tab-ind" id="tab-ind"></span>
@@ -376,7 +363,7 @@
     <section class="view" id="view-settings">
       <div class="container">
         <h1 class="title">Configurações</h1>
-        <p class="subtitle">Personalize o PlayHub do seu jeito.</p>
+        <p class="subtitle">Personalize o PlayRom.io do seu jeito.</p>
         <div class="set-wrap">
           <div class="set-nav" id="set-nav">
             <button class="active" data-pane="geral">
@@ -773,9 +760,9 @@
             </div>
             <div class="pane" id="pane-sobre">
               <div class="about">
-                <b style="color: #fff">PlayHub</b><br />Emulador de PlayStation 1, Mega Drive e Atari no
-                navegador, com base no <b>EmulatorJS <span class="ejs-v"></span></b> (GPL-3.0)
-                e no RetroArch/libretro. Seus jogos nunca saem do seu aparelho.
+                <b style="color: #fff">PlayRom.io</b><br />Emulador de PlayStation 1 (PS1) no
+                navegador, com base no <b>EmulatorJS <span class="ejs-v"></span></b> (GPL-3.0),
+                RetroArch e o núcleo PCSX-ReARMed. Seus jogos nunca saem do seu aparelho.
               </div>
               <div class="row">
                 <div>
@@ -1418,8 +1405,8 @@
       <i class="fa-solid fa-mobile-screen-button"></i><span>Gire o celular para jogar</span>
     </div>
     <div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-text"></span></div>
-    <script src="app.js?v=20261006"></script>
-    <script src="optimizer.js?v=20261006"></script>
-    <script src="multiplayer.js?v=20261006"></script>
+    <script src="app.js"></script>
+    <script src="optimizer.js"></script>
+    <script src="multiplayer.js"></script>
   </body>
 </html>
