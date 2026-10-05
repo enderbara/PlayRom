@@ -25,17 +25,20 @@ const safe = (js) => js.replace(/<\/script/gi, "<\\/script");
 let html = rd("index.html");
 const before = html.length;
 html = html.replace('<link rel="icon" href="logo.png" />', '<link rel="icon" href="' + logo + '" />');
-html = html.replace('<link rel="stylesheet" href="style.css" />', "<style>\n" + rd("style.css") + "\n</style>");
+html = html.replace(/<link rel="stylesheet" href="style\.css(\?[^"]*)?" \/>/, () => "<style>\n" + rd("style.css") + "\n</style>");
 html = html.split('src="logo.png"').join('src="' + logo + '"');
 
 const order = ["app.js", "optimizer.js", "netopt.js", "multiplayer.js"];
 let first = true;
 for (const f of order) {
-  const tag = '<script src="' + f + '"></script>';
-  if (!html.includes(tag)) {
-    console.error("Não achei " + tag + " no index.html");
+  const re = new RegExp('<script src="' + f.replace(".", "\\.") + '(\\?[^"]*)?"></script>');
+  const m = html.match(re);
+  if (!m) {
+    if (f === "netopt.js") continue; // opcional: o index.html atual não carrega este arquivo
+    console.error("Não achei o <script> de " + f + " no index.html");
     process.exit(1);
   }
+  const tag = m[0];
   const pre = first && site ? "<script>window.__PLAYHUB_SITE__=" + JSON.stringify(site) + ";</script>\n" : "";
   first = false;
   html = html.replace(tag, () => pre + "<script>\n" + safe(rd(f)) + "\n</script>");
