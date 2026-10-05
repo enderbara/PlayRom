@@ -1,8 +1,8 @@
 "use strict";
 /*
  * Servidor WebSocket mínimo (RFC 6455), sem nenhuma dependência.
- * Existe para o PlayHub funcionar SEM "npm install" / node_modules.
- * Só implementa o que o PlayHub usa: texto, ping/pong, close e mensagens fragmentadas.
+ * Existe para o PlayRom.io funcionar SEM "npm install" / node_modules.
+ * Só implementa o que o PlayRom.io usa: texto, ping/pong, close e mensagens fragmentadas.
  * Se o pacote "ws" estiver instalado, o server.js usa ele no lugar deste.
  */
 const crypto = require("crypto");
@@ -108,8 +108,6 @@ class Socket extends EventEmitter {
         if (op !== 0) this.frag = { text: op === 1, parts: [] };
         if (!this.frag) continue;
         this.frag.parts.push(p);
-        this.frag.size = (this.frag.size || 0) + p.length;
-        if (this.frag.size > this.max) return this.terminate(); // evita encher a memória com pedaços
         if (fin) {
           const all = Buffer.concat(this.frag.parts);
           this.frag = null;
