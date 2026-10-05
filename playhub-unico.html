@@ -8205,8 +8205,8 @@ const mpUiOpen = () =>
   !shEl.classList.contains("hidden");
 const MP_PORT = 3000;
 // No HTML único (build-unico.js) o endereço público do site é gravado aqui.
-const MP_SITE = (window.__PLAYHUB_SITE__ || "").replace(/\/+$/, "");
-const MP_SERVERS = MP_SITE ? [MP_SITE.replace(/^http/i, "ws")] : [];
+const MP_SITE = "https://playhubgg.onrender.com";
+const MP_SERVERS = ["wss://playhubgg.onrender.com"];
 {
   const q = new URLSearchParams(location.search).get("sala");
   window.__plPend = q && /^[a-f0-9]{8}$/i.test(q) ? q.toLowerCase() : null;
