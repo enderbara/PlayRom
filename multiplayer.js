@@ -49,8 +49,8 @@ const mpUiOpen = () =>
   !mpcEl.classList.contains("hidden") ||
   !shEl.classList.contains("hidden");
 const MP_PORT = 3000;
-const MP_SITE = "https://playhubgg.onrender.com";
-const MP_SERVERS = ["wss://playhubgg.onrender.com"];
+const MP_SERVERS = [];
+const MP_SITE = "";
 {
   const q = new URLSearchParams(location.search).get("sala");
   window.__plPend = q && /^[a-f0-9]{8}$/i.test(q) ? q.toLowerCase() : null;
@@ -1767,8 +1767,8 @@ $("#sh-native").onclick = async () => {
   try {
     await navigator.share(
       l
-        ? { title: "PlayHub", text: "Entre na minha sala do PlayHub! Código: " + id, url: l }
-        : { title: "PlayHub", text: "Entre na minha sala do PlayHub! Código: " + id },
+        ? { title: "PlayRom.io", text: "Entre na minha sala do PlayRom.io! Código: " + id, url: l }
+        : { title: "PlayRom.io", text: "Entre na minha sala do PlayRom.io! Código: " + id },
     );
   } catch {}
 };
@@ -1841,7 +1841,7 @@ function mpNorm(v) {
 $("#mp-srv").onclick = async () => {
   if (mp.busy || mp.on) return;
   const v = window.prompt(
-    "Endereço do servidor do PlayHub.\nEx.: 192.168.0.10  ou  https://meu-servidor.com\n(deixe vazio para procurar automaticamente)",
+    "Endereço do servidor do PlayRom.io.\nEx.: 192.168.0.10  ou  https://meu-servidor.com\n(deixe vazio para procurar automaticamente)",
     cfg.get("mpManual", "") || "",
   );
   if (v === null) return;
