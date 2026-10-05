@@ -1,4 +1,4 @@
-PLAYHUB - O QUE MUDOU E COMO USAR
+PLAYROM - O QUE MUDOU E COMO USAR
 =================================
 
 1) NAO PRECISA MAIS DE node_modules
@@ -8,7 +8,7 @@ PLAYHUB - O QUE MUDOU E COMO USAR
 
 2) OTIMIZADOR (funciona para qualquer jogo de PS1)
    - Configuracoes > Video > "Nivel minimo de otimizacao": 0 a 4 (Ultra).
-   - Com "Otimizacao automatica" ligada, o PlayHub ja identifica celular fraco/pouca memoria e abre
+   - Com "Otimizacao automatica" ligada, o PlayRom.io ja identifica celular fraco/pouca memoria e abre
      o jogo num nivel adequado. Se travar, sobe sozinho (2 niveis de uma vez se estiver MUITO lento)
      e lembra o nivel para aquele jogo.
    - Aparelho bem fraco? Deixe o nivel minimo em "Ultra" e feche as outras abas/apps.
@@ -33,8 +33,8 @@ PLAYHUB - O QUE MUDOU E COMO USAR
 4) CONVIDAR AMIGOS
    - Nova aba "Convidar" (e botao "Convidar amigos" dentro de Multiplayer).
    - Dentro de uma sala, "Compartilhar" tem link da sala + codigo + botoes WhatsApp/Telegram.
-   - O link so funciona na internet se o PlayHub estiver publicado (item 5). Em localhost ele
-     so abre para quem esta no mesmo Wi-Fi, e o PlayHub avisa isso na tela.
+   - O link so funciona na internet se o PlayRom.io estiver publicado (item 5). Em localhost ele
+     so abre para quem esta no mesmo Wi-Fi, e o PlayRom.io avisa isso na tela.
 
 5) PUBLICAR NA INTERNET (para amigos em qualquer lugar)
    - Suba esta pasta num repositorio do GitHub e crie um "Web Service" no Render (https://render.com)
@@ -47,6 +47,6 @@ PLAYHUB - O QUE MUDOU E COMO USAR
    Antes: mandar so o index.html mostrava a pagina sem estilo e sem funcionar, porque o CSS e os
    scripts sao arquivos separados. Agora:
      - De dois cliques em gerar-html-unico.bat (ou: node build-unico.js https://seu-site.onrender.com)
-     - Ele cria o playhub-unico.html, UM arquivo com tudo dentro. Mande esse por WhatsApp.
+     - Ele cria o playrom-unico.html, UM arquivo com tudo dentro. Mande esse por WhatsApp.
      - O aparelho precisa de internet (o emulador e as fontes vem da internet).
      - Melhor ainda: mande o LINK do site publicado em vez de arquivo.
