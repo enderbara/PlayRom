@@ -2,7 +2,7 @@
 const $ = (e, t = document) => t.querySelector(e),
   $$ = (e) => [...document.querySelectorAll(e)],
   sleep = (e) => new Promise((t) => setTimeout(t, e)),
-  DB = "PlayHubDB",
+  DB = "PlayRomDB",
   STORE = "roms";
 let library = [],
   filter = "all",
@@ -801,7 +801,7 @@ async function pickFolder() {
     return;
   }
   try {
-    const e = await window.showDirectoryPicker({ id: "playhub-roms", mode: "read" }),
+    const e = await window.showDirectoryPicker({ id: "playrom-roms", mode: "read" }),
       sc = await scanRoot(e),
       t = await Promise.all(
         sc.items.map(async ([, a, s]) => {
@@ -2601,7 +2601,7 @@ async function notifyLoaded(e, t) {
     body: `O jogo ${e} foi carregado com sucesso! Volte à aba do PlayRom.io para se divertir!`,
     icon: "logo.png",
     badge: "logo.png",
-    tag: "playhub-loaded",
+    tag: "playrom-loaded",
   };
   try {
     const s = new Notification("Seu jogo carregou!", a);
