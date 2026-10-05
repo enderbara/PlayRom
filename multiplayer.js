@@ -49,8 +49,8 @@ const mpUiOpen = () =>
   !mpcEl.classList.contains("hidden") ||
   !shEl.classList.contains("hidden");
 const MP_PORT = 3000;
-const MP_SERVERS = [];
-const MP_SITE = "";
+const MP_SITE = "https://playhubgg.onrender.com";
+const MP_SERVERS = ["wss://playhubgg.onrender.com"];
 {
   const q = new URLSearchParams(location.search).get("sala");
   window.__plPend = q && /^[a-f0-9]{8}$/i.test(q) ? q.toLowerCase() : null;
