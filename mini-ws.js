@@ -108,6 +108,8 @@ class Socket extends EventEmitter {
         if (op !== 0) this.frag = { text: op === 1, parts: [] };
         if (!this.frag) continue;
         this.frag.parts.push(p);
+        this.frag.size = (this.frag.size || 0) + p.length;
+        if (this.frag.size > this.max) return this.terminate(); // evita encher a memória com pedaços
         if (fin) {
           const all = Buffer.concat(this.frag.parts);
           this.frag = null;
@@ -143,22 +145,4 @@ class WebSocketServer extends EventEmitter {
     });
   }
 }
-
 module.exports = { WebSocketServer };
-
-// Inicialização automática para execução direta no Render / Node.js
-if (require.main === module) {
-  const http = require("http");
-  const PORT = process.env.PORT || 8080;
-
-  const server = http.createServer((req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Servidor WebSocket PlayHub Ativo\n");
-  });
-
-  new WebSocketServer({ server });
-
-  server.listen(PORT, () => {
-    console.log(`Servidor PlayHub rodando na porta ${PORT}`);
-  });
-}
