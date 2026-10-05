@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title PlayHub - Servidor multiplayer
+title PlayRom.io - Servidor multiplayer
 cd /d "%~dp0"
 
 where node >nul 2>nul
