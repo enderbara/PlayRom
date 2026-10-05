@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title PlayHub - Gerar HTML unico
+title PlayRom.io - Gerar HTML unico
 cd /d "%~dp0"
 
 where node >nul 2>nul
@@ -11,11 +11,11 @@ if errorlevel 1 (
 )
 
 echo.
-echo  Isto cria o arquivo playhub-unico.html: um arquivo so, com tudo dentro,
+echo  Isto cria o arquivo playrom-unico.html: um arquivo so, com tudo dentro,
 echo  que voce pode mandar por WhatsApp e abre em qualquer aparelho.
 echo.
-echo  Se voce ja publicou o PlayHub na internet, digite o endereco dele
-echo  (ex.: https://meu-playhub.onrender.com) para o multiplayer funcionar.
+echo  Se voce ja publicou o PlayRom.io na internet, digite o endereco dele
+echo  (ex.: https://meu-playrom.onrender.com) para o multiplayer funcionar.
 echo  Se nao, so aperte Enter.
 echo.
 set /p SITE="  Endereco do site: "
