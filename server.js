@@ -79,7 +79,7 @@ const LAN_IPS = () =>
     .map((i) => i.address);
 let ICE = null;
 try {
-  ICE = JSON.parse(process.env.PLAYHUB_ICE || "null");
+  ICE = JSON.parse(process.env.PLAYROM_ICE || process.env.PLAYHUB_ICE || "null");
 } catch {}
 const server = http.createServer((req, res) => {
   if ((req.url || "").split("?")[0] === "/health") {
