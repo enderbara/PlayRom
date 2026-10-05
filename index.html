@@ -1,0 +1,1412 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#080808" />
+    <title>PlayHub</title>
+    <link rel="icon" href="logo.png" />
+    <link rel="preconnect" href="https://cdn.emulatorjs.org" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.emulatorjs.org" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="sharp" color-interpolation-filters="sRGB">
+        <feConvolveMatrix
+          id="sharpK"
+          order="3"
+          kernelMatrix="0 0 0 0 1 0 0 0 0"
+          preserveAlpha="true"
+        />
+      </filter>
+    </svg>
+    <div id="splash">
+      <div class="ld" id="splash-ui">
+        <i class="ld-orbit"></i
+        ><svg class="ld-svg" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="ld-trk" cx="50" cy="50" r="46" />
+          <circle class="ld-arc" cx="50" cy="50" r="46" />
+        </svg>
+        <div class="ld-name">PlayHub</div>
+        <div class="ld-bar"><i class="ld-fill"></i></div>
+        <div class="ld-pct"><b>0</b>%</div>
+        <div class="ld-st"></div>
+      </div>
+      <img
+        src="logo.png"
+        class="logo-mark"
+        id="splash-logo"
+        alt="Logo PlayHub"
+        onerror="
+          this.onerror = null;
+          this.src =
+            'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZiMzMzMyI+PHBhdGggZD0iTTIxIDEyTDMgMjBWMTRMMTggMTJMMyAxMFY0TDIxIDEyWiIvPjwvc3ZnPg==';
+        "
+      />
+    </div>
+    <div id="tos" class="hidden" role="dialog" aria-modal="true" aria-labelledby="tos-t">
+      <div class="gs-box tos-box">
+        <div class="gs-head">
+          <div class="gs-title">
+            <div class="icon-box"><i class="fa-solid fa-file-contract"></i></div>
+            <div>
+              <span id="tos-t">Termos e Condições</span
+              ><small>Versão 1.0 · usa o EmulatorJS <span class="ejs-v"></span></small>
+            </div>
+          </div>
+          <button class="ibtn" id="tos-x" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="tos-body">
+          <p>
+            Leia com calma. Aqui explicamos, sem juridiquês, o que é o PlayHub, de onde vem o
+            emulador, o que fica salvo no seu aparelho e quais são as suas responsabilidades.
+          </p>
+          <h4>1. O que é o PlayHub</h4>
+          <p>
+            O PlayHub é um player que roda jogos de PlayStation 1 (PS1) direto no navegador. Ele não
+            vem com jogos nem com BIOS: você usa os seus próprios arquivos.
+          </p>
+          <h4>2. Créditos e versão do emulador</h4>
+          <p>
+            A emulação é feita pelo <b>EmulatorJS versão <span class="ejs-v"></span></b>, projeto de
+            código aberto da equipe do EmulatorJS (<a
+              href="https://emulatorjs.org"
+              target="_blank"
+              rel="noopener"
+              >emulatorjs.org</a
+            >
+            ·
+            <a href="https://github.com/EmulatorJS/EmulatorJS" target="_blank" rel="noopener"
+              >GitHub</a
+            >), licenciado sob a <b>GNU GPL v3</b>. O EmulatorJS é uma interface web para o
+            <b>RetroArch</b>/libretro, e o PS1 roda com o núcleo <b>PCSX-ReARMed</b>. Todo o mérito
+            da emulação é dos seus autores e colaboradores. O PlayHub não altera nem redistribui
+            esse código: ele é carregado do CDN oficial (cdn.emulatorjs.org) e a versão é fixa, para
+            o crédito acima ser sempre verdadeiro.
+          </p>
+          <h4>3. Sem vínculo com empresas</h4>
+          <p>
+            O PlayHub não tem ligação, aprovação ou patrocínio da Sony, do EmulatorJS, do RetroArch
+            ou de qualquer produtora. “PlayStation” e os nomes dos jogos são marcas dos seus donos.
+          </p>
+          <h4>4. Jogos e BIOS: sua responsabilidade</h4>
+          <p>
+            O EmulatorJS e o PlayHub não fornecem jogos nem BIOS. Use apenas jogos que você possui e
+            copiou dos seus próprios discos. Baixar ou compartilhar jogos protegidos por direitos
+            autorais pode ser crime e violar as leis do seu país, e isso é responsabilidade
+            exclusiva de quem faz.
+          </p>
+          <h4>5. Seus arquivos e privacidade</h4>
+          <p>
+            Os jogos <b>não são enviados</b> a nenhum servidor: são lidos do seu computador ou
+            celular. O PlayHub guarda só neste navegador (IndexedDB e localStorage): configurações,
+            favoritos, saves, nomes dos arquivos e o acesso à sua pasta. Não há conta, cadastro nem
+            rastreamento. Em Configurações > Biblioteca você apaga tudo quando quiser, e limpar os
+            dados do navegador também remove tudo.
+          </p>
+          <h4>6. Serviços de terceiros</h4>
+          <p>
+            Ao abrir o site, o seu navegador acessa o CDN do EmulatorJS, o Font Awesome
+            (cdnjs.cloudflare.com) e o Google Fonts. Esses serviços recebem o seu endereço IP, como
+            em qualquer site, e seguem as próprias políticas.
+          </p>
+          <h4>7. Multiplayer (2 jogadores)</h4>
+          <p>
+            Cada sala tem no máximo <b>2 jogadores</b>. Qualquer pessoa pode ver as salas abertas, e
+            você também pode convidar por link ou código. A descoberta de salas usa o servidor do
+            PlayHub (se existir) ou corretores MQTT públicos (broker.emqx.io, broker.hivemq.com,
+            test.mosquitto.org), que veem nome da sala, jogo e o IP de quem se conecta. A conexão
+            entre os jogadores é direta (WebRTC), com servidores STUN do Google e, se a conexão
+            direta falhar, um servidor TURN público (openrelay.metered.ca) que repassa os dados. O
+            outro jogador pode ver o seu IP. O vídeo e o som do jogo passam do anfitrião para o
+            convidado. Jogue só com quem você conhece.
+          </p>
+          <h4>8. Notificações</h4>
+          <p>São opcionais e só servem para avisar que o jogo terminou de carregar.</p>
+          <h4>9. Sem garantias</h4>
+          <p>
+            O PlayHub é oferecido “como está”. Alguns jogos podem travar, ficar sem som ou perder
+            saves, e não nos responsabilizamos por perdas ou danos ao usar o site. Faça backup dos
+            seus saves.
+          </p>
+          <h4>10. Mudanças</h4>
+          <p>
+            Estes termos podem mudar. Quando mudarem, você será avisado e precisará aceitar de novo.
+            Você pode relê-los em Configurações > Sobre.
+          </p>
+          <p style="opacity: 0.7">
+            Este texto é informativo e não substitui aconselhamento jurídico.
+          </p>
+        </div>
+        <div class="tos-foot">
+          <label class="tos-ck"
+            ><input type="checkbox" id="tos-ck" /><span>Li e aceito os termos</span></label
+          ><button class="btn" id="tos-ok"><span>Continuar</span></button>
+        </div>
+      </div>
+    </div>
+    <main id="setup" class="hidden">
+      <div class="step-card enter" id="st1">
+        <div class="icon-box"><i class="fa-solid fa-gamepad"></i></div>
+        <h2 class="step-title">Bem-vindo ao <span class="red">PlayHub</span></h2>
+        <p class="step-desc">Emulação de PlayStation 1, Mega Drive e Atari diretamente no seu navegador.</p>
+        <button class="btn block" id="btn-start">
+          <span>Configurar</span><i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <div class="dots">
+          <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+      <div class="step-card hidden" id="st2">
+        <div class="icon-box"><i class="fa-solid fa-folder-tree"></i></div>
+        <h2 class="step-title">Selecione a <span class="red">Pasta</span></h2>
+        <p class="step-desc">Escolha a pasta onde ficam seus jogos.</p>
+        <div class="tree">
+          <div><i class="fa-solid fa-folder-open"></i><span>Pasta dos jogos</span></div>
+          <div style="margin-left: 22px">
+            <i class="fa-solid fa-folder"></i><span>PS1</span><span class="tag">.chd .pbp .iso .bin</span>
+          </div>
+          <div style="margin-left: 22px">
+            <i class="fa-solid fa-folder"></i><span>Mega Drive</span><span class="tag">.md .gen .smd .zip</span>
+          </div>
+          <div style="margin-left: 22px">
+            <i class="fa-solid fa-folder"></i><span>Atari</span><span class="tag">.a26 .bin .zip</span>
+          </div>
+        </div>
+        <p class="step-desc" style="font-size: 0.8rem">
+          As 3 pastas são obrigatórias, com esses nomes. Sem elas o PlayHub não aceita.
+        </p>
+        <button class="btn block" id="btn-pick">
+          <i class="fa-solid fa-folder-plus"></i><span>Selecionar Pasta</span>
+        </button>
+        <button class="btn block ghost" id="btn-mponly" style="margin-top: 10px">
+          <i class="fa-solid fa-users"></i><span>Só entrar em salas multiplayer</span>
+        </button>
+        <div class="dots">
+          <span class="dot"></span><span class="dot active"></span><span class="dot"></span>
+        </div>
+      </div>
+      <div class="step-card hidden" id="st-load">
+        <div class="mini-spinner"></div>
+        <div class="log" id="log">> Lendo a pasta...</div>
+      </div>
+      <div class="step-card hidden" id="st-err">
+        <div class="icon-box"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <h2 class="step-title">Erro</h2>
+        <p class="step-desc" id="err-msg"></p>
+        <div class="chk-list" id="err-chk"></div>
+        <button class="btn ghost block" id="btn-retry">
+          <i class="fa-solid fa-arrow-left"></i><span>Voltar</span>
+        </button>
+      </div>
+      <div class="step-card hidden" id="st3">
+        <div class="icon-box"><i class="fa-solid fa-circle-check"></i></div>
+        <h2 class="step-title">Tudo <span class="red">Pronto!</span></h2>
+        <p class="step-desc" id="summary"></p>
+        <div class="chk-list" id="sum-chk"></div>
+        <button class="btn block" id="btn-finish">
+          <i class="fa-solid fa-play"></i><span>Finalizar</span>
+        </button>
+        <div class="dots">
+          <span class="dot"></span><span class="dot"></span><span class="dot active"></span>
+        </div>
+      </div>
+    </main>
+    <input type="file" id="folder-input" webkitdirectory directory multiple hidden />
+    <header class="app-header hidden" id="app-header">
+      <div class="brand">
+        <img
+          id="brand-logo"
+          src="logo.png"
+          alt="PlayHub"
+          onerror="
+            this.onerror = null;
+            this.src =
+              'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZiMzMzMyI+PHBhdGggZD0iTTIxIDEyTDMgMjBWMTRMMTggMTJMMyAxMFY0TDIxIDEyWiIvPjwvc3ZnPg==';
+          "
+        />Play<span class="red">Hub</span>
+      </div>
+      <nav class="tabs" id="tabs">
+        <span class="tab-ind" id="tab-ind"></span>
+        <button class="tab" data-view="home">
+          <i class="fa-solid fa-tv"></i><span id="tab-con-t">Consoles</span>
+        </button>
+        <button class="tab active" data-view="library">
+          <i class="fa-solid fa-gamepad"></i><span>Jogos</span>
+        </button>
+        <button class="tab" data-view="multi">
+          <i class="fa-solid fa-users"></i><span>Multiplayer</span>
+        </button>
+        <button class="tab" data-view="settings">
+          <i class="fa-solid fa-gear"></i><span>Configurações</span>
+        </button>
+      </nav>
+    </header>
+    <section class="view" id="view-home">
+      <div class="container">
+        <h1 class="title">Escolha o <span class="red">Console</span></h1>
+        <p class="subtitle">Cada console tem seus próprios jogos, controles, configurações e salas.</p>
+        <div class="mp-hub home-grid" id="home-grid"></div>
+      </div>
+    </section>
+    <section class="view" id="view-library">
+      <div class="container">
+        <h1 class="title">Seus <span class="red">Jogos</span></h1>
+        <p class="subtitle" id="lib-sub"></p>
+        <div class="toolbar">
+          <div class="search">
+            <i class="fa-solid fa-magnifying-glass"></i
+            ><input id="search" type="search" placeholder="Buscar jogo..." autocomplete="off" />
+          </div>
+          <div class="chips" id="chips"></div>
+        </div>
+        <div class="banner" id="banner"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </section>
+    <section class="view" id="view-multi">
+      <div class="container">
+        <h1 class="title">Multi<span class="red">player</span></h1>
+        <p class="subtitle">
+          Jogue com amigos pela internet, sem instalar nada. Crie uma sala e mande o link ou o
+          código, ou entre em uma aberta.
+        </p>
+        <div class="banner" id="mp-banner"></div>
+        <div class="mp-hub" id="mp-hub">
+          <button class="mp-opt" id="mp-opt-create" type="button">
+            <div class="icon-box"><i class="fa-solid fa-plus"></i></div>
+            <h3>Criar server</h3>
+            <p>Escolha um jogo e abra uma sala para seus amigos.</p>
+          </button>
+          <button class="mp-opt" id="mp-opt-join" type="button">
+            <div class="icon-box"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <h3>Entrar no server</h3>
+            <p>Veja as salas abertas ou entre com um código.</p>
+          </button>
+        </div>
+        <div class="mp-srvbar" id="mp-srvbar" style="gap: 10px; flex-wrap: wrap">
+          <button class="btn small" id="mp-code" type="button">
+            <i class="fa-solid fa-key"></i><span>Entrar com código</span></button
+          ><button class="btn small ghost" id="mp-srv" type="button">
+            <i class="fa-solid fa-server"></i><span>Endereço do servidor</span>
+          </button>
+        </div>
+        <div id="mp-pg-join" class="hidden">
+          <div class="mp-subbar">
+            <button class="btn small ghost" id="mp-back-j" type="button">
+              <i class="fa-solid fa-arrow-left"></i><span>Voltar</span>
+            </button>
+            <h2>Servers disponíveis</h2>
+            <button class="btn small" id="mp-refresh" type="button">
+              <i class="fa-solid fa-rotate"></i><span>Procurar de novo</span>
+            </button>
+          </div>
+          <div class="panel" style="padding: 0"><div class="mp-rooms" id="mp-jlist"></div></div>
+        </div>
+        <div id="mp-pg-create" class="hidden">
+          <div class="mp-subbar">
+            <button class="btn small ghost" id="mp-back-c" type="button">
+              <i class="fa-solid fa-arrow-left"></i><span>Voltar</span>
+            </button>
+            <h2>Criar server</h2>
+          </div>
+          <div class="panel" style="margin-top: 22px">
+            <div class="row">
+              <div>
+                <h3>Nome da sala</h3>
+                <p><span id="mp-cnt">0/20</span> caracteres · opcional</p>
+              </div>
+              <input
+                class="txt"
+                id="mp-name"
+                maxlength="20"
+                placeholder="Ex.: Sala do Nathan"
+                autocomplete="off"
+              />
+            </div>
+            <div class="row">
+              <div>
+                <h3>Jogo</h3>
+                <p>O jogo que será iniciado na sala.</p>
+              </div>
+              <select class="sel" id="mp-game"></select>
+            </div>
+            <div class="row">
+              <div>
+                <h3>Jogadores</h3>
+                <p>A sala é para 2 jogadores: você e um amigo.</p>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn block" id="mp-create">
+                <i class="fa-solid fa-plus"></i><span>Criar sala</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="view" id="view-settings">
+      <div class="container">
+        <h1 class="title">Configurações</h1>
+        <p class="subtitle">Personalize o PlayHub do seu jeito.</p>
+        <div class="set-wrap">
+          <div class="set-nav" id="set-nav">
+            <button class="active" data-pane="geral">
+              <i class="fa-solid fa-sliders"></i>Geral
+            </button>
+            <button data-pane="controles"><i class="fa-solid fa-gamepad"></i>Controles</button>
+            <button data-pane="video"><i class="fa-solid fa-tv"></i>Vídeo</button>
+            <button data-pane="permissao"><i class="fa-solid fa-bell"></i>Permissão</button>
+            <button data-pane="dados"><i class="fa-solid fa-database"></i>Biblioteca</button>
+            <button data-pane="sobre"><i class="fa-solid fa-circle-info"></i>Sobre</button>
+          </div>
+          <div class="panel">
+            <div class="pane show" id="pane-geral">
+              <div class="row">
+                <div>
+                  <h3>Reduzir animações</h3>
+                  <p>Desativa transições e efeitos.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="reduceAnim" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Controle na tela</h3>
+                  <p>Gamepad virtual para toque.</p>
+                </div>
+                <select class="sel" data-key="pad">
+                  <option value="auto">Automático</option>
+                  <option value="on">Sempre mostrar</option>
+                  <option value="off">Ocultar</option>
+                </select>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Opacidade do controle</h3>
+                  <p>Transparência dos botões.</p>
+                </div>
+                <div class="ctl">
+                  <input type="range" data-key="opacity" min="30" max="100" /><span
+                    class="val"
+                    data-val="opacity"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Vibração</h3>
+                  <p>Vibrar ao tocar nos botões.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="vib" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Avisos</h3>
+                  <p>Reativa os avisos de reinício e de salvar em outro slot.</p>
+                </div>
+                <button class="btn small ghost" id="btn-tips">Reativar</button>
+              </div>
+            </div>
+            <div class="pane" id="pane-controles">
+              <div class="seg kb-pl" id="kb-players" style="margin-top: 14px">
+                <button class="active" data-p="0">Jogador 1</button
+                ><button data-p="1">Jogador 2</button>
+              </div>
+              <div class="about" style="padding-bottom: 0">
+                Cada jogador tem suas próprias teclas, útil para jogar em 2 no mesmo teclado do PC
+                (no celular só o Jogador 1 funciona, via toque). Clique em uma tecla e pressione a
+                nova (se já estiver em uso, as duas trocam). <b>Esc</b> cancela. Também dá para
+                alterar na engrenagem <i class="fa-solid fa-gear red"></i> dentro do jogo.
+              </div>
+              <table class="keys" id="keys-table"></table>
+              <div class="gs-h">Toque</div>
+              <div class="row">
+                <div><h3>Tamanho dos botões</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="scale" min="70" max="140" step="5" /><span
+                    class="val"
+                    data-val="scale"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="gs-h">Gamepad na tela</div>
+              <div class="row">
+                <div>
+                  <h3>Estilo do direcional</h3>
+                  <p>Setas (D-pad) ou joystick virtual.</p>
+                </div>
+                <select class="sel" data-key="padType">
+                  <option value="dpad">Setas</option>
+                  <option value="joy">Joystick</option>
+                </select>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Posição dos botões</h3>
+                  <p>
+                    Para arrastar os botões, abra um jogo e vá em engrenagem › Controles › Toque ›
+                    Editar.
+                  </p>
+                </div>
+                <button class="btn small ghost" id="set-padreset">Restaurar</button>
+              </div>
+              <div class="gs-h">Controle USB / Bluetooth</div>
+              <div class="row">
+                <div>
+                  <h3>Ativar controle USB / Bluetooth</h3>
+                  <p>Usa a Gamepad API do navegador.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="gpOn" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Zona morta do analógico</h3>
+                  <p>Evita movimentos involuntários.</p>
+                </div>
+                <div class="ctl">
+                  <input type="range" data-key="gpDead" min="5" max="60" step="5" /><span
+                    class="val"
+                    data-val="gpDead"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Trocar A/B e X/Y</h3>
+                  <p>Segue o rótulo dos botões (layout Nintendo).</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="gpSwap" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="gs-h">Reiniciar</div>
+              <div class="row">
+                <div>
+                  <h3>Ao reiniciar o jogo</h3>
+                  <p>Vale quando há um save carregado.</p>
+                </div>
+                <select class="sel" data-key="resetMode">
+                  <option value="save">A partir do save</option>
+                  <option value="full">Reiniciar o jogo todo</option>
+                </select>
+              </div>
+            </div>
+            <div class="pane" id="pane-video">
+              <div class="gs-h">Predefinições de qualidade</div>
+              <div class="gs-pre">
+                <div class="seg" id="presets2">
+                  <button data-preset="low"><i class="fa-solid fa-bolt"></i> Baixa</button>
+                  <button data-preset="mid">
+                    <i class="fa-solid fa-scale-balanced"></i> Média
+                  </button>
+                  <button data-preset="high"><i class="fa-solid fa-gem"></i> Alta</button>
+                  <button data-preset="crt"><i class="fa-solid fa-tv"></i> CRT</button>
+                </div>
+              </div>
+              <p class="gs-hint">
+                Baixa desliga todos os efeitos para render mais leve. Alta aplica suavização e
+                nitidez. CRT imita uma TV de tubo.
+              </p>
+              <div class="gs-h">Imagem</div>
+              <div class="row">
+                <div>
+                  <h3>Filtro de pixels</h3>
+                  <p>Nítido mantém os pixels; suave aplica interpolação.</p>
+                </div>
+                <div class="seg" data-key="filter">
+                  <button data-v="pixel">Nítido</button><button data-v="smooth">Suave</button>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Proporção da tela</h3></div>
+                <select class="sel" data-key="aspect">
+                  <option value="orig">Original (pixels quadrados)</option>
+                  <option value="43">4:3 (TV antiga)</option>
+                  <option value="169">16:9</option>
+                  <option value="stretch">Esticar na tela</option>
+                </select>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Escala inteira</h3>
+                  <p>Pixel perfeito: só amplia em múltiplos inteiros.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="intScale" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div><h3>Zoom</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="zoom" min="80" max="140" step="5" /><span
+                    class="val"
+                    data-val="zoom"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Rotação</h3></div>
+                <div class="seg" data-key="rot">
+                  <button data-v="0">0°</button><button data-v="90">90°</button
+                  ><button data-v="180">180°</button><button data-v="270">270°</button>
+                </div>
+              </div>
+              <div class="gs-h">Cores</div>
+              <div class="row">
+                <div><h3>Modo de cor</h3></div>
+                <div class="seg" data-key="color">
+                  <button data-v="normal">Normal</button><button data-v="vivid">Vívido</button
+                  ><button data-v="sepia">Sépia</button><button data-v="gray">P&amp;B</button>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Brilho</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="brightness" min="60" max="150" /><span
+                    class="val"
+                    data-val="brightness"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Contraste</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="contrast" min="60" max="150" /><span
+                    class="val"
+                    data-val="contrast"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Saturação</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="saturation" min="0" max="200" /><span
+                    class="val"
+                    data-val="saturation"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="gs-h">Efeitos</div>
+              <div class="row">
+                <div>
+                  <h3>Nitidez</h3>
+                  <p>Realça as bordas da imagem.</p>
+                </div>
+                <div class="ctl">
+                  <input type="range" data-key="sharp" min="0" max="100" step="5" /><span
+                    class="val"
+                    data-val="sharp"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Linhas de varredura</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="scan" min="0" max="60" step="5" /><span
+                    class="val"
+                    data-val="scan"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Vinheta</h3>
+                  <p>Escurece as bordas da tela.</p>
+                </div>
+                <div class="ctl">
+                  <input type="range" data-key="vig" min="0" max="80" step="5" /><span
+                    class="val"
+                    data-val="vig"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="gs-h">Desempenho</div>
+              <div class="row">
+                <div>
+                  <h3>Taxa de quadros</h3>
+                  <p>Limita a velocidade do emulador. Nativo segue o monitor.</p>
+                </div>
+                <div class="seg" data-key="fps">
+                  <button data-v="30">30</button><button data-v="50">50</button
+                  ><button data-v="60">60</button><button data-v="0">Nativo</button>
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Modo desempenho</h3>
+                  <p>Desliga cores, nitidez e efeitos para render mais leve.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="perf" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Otimização automática</h3>
+                  <p>Se o jogo travar, o emulador ajusta a qualidade sozinho e avisa você.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="autoOpt" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div><h3>Pausar ao trocar de aba</h3></div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="autoPause" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div><h3>Mostrar contador de FPS</h3></div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="showFps" /><span class="slider"></span
+                ></label>
+              </div>
+            </div>
+            <div class="pane" id="pane-permissao">
+              <div class="row">
+                <div>
+                  <h3>Notificações</h3>
+                  <p id="perm-desc"></p>
+                </div>
+                <div class="ctl">
+                  <span class="perm-badge" id="perm-badge">--</span
+                  ><button class="btn small" id="perm-btn">Permitir</button>
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Avisar quando o jogo carregar</h3>
+                  <p>Mostra "Seu jogo carregou!" quando você estiver em outra aba.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="notify" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Notificação de teste</h3>
+                  <p>Envia agora uma notificação de exemplo.</p>
+                </div>
+                <button class="btn small ghost" id="perm-test">Testar</button>
+              </div>
+            </div>
+            <div class="pane" id="pane-dados">
+              <div class="row">
+                <div>
+                  <h3>Alterar pasta de jogos</h3>
+                  <p>Escolha outra pasta com ROMs.</p>
+                </div>
+                <button class="btn small" id="btn-change">Alterar</button>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>BIOS do PlayStation</h3>
+                  <p id="bios-desc">
+                    Sem BIOS, muitos jogos travam ou ficam com imagem bugada. Escolha um arquivo
+                    scph*.bin seu.
+                  </p>
+                </div>
+                <div class="ctl">
+                  <button class="btn small" id="btn-bios">Escolher</button
+                  ><button class="btn small ghost hidden" id="btn-bios-x">Remover</button>
+                </div>
+              </div>
+              <input type="file" id="bios-input" accept=".bin" hidden />
+              <div class="row">
+                <div>
+                  <h3>Limpar favoritos</h3>
+                  <p>Remove todas as marcações.</p>
+                </div>
+                <button class="btn small ghost" id="btn-clear-fav">Limpar</button>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Limpar biblioteca</h3>
+                  <p>Remove os jogos salvos no navegador.</p>
+                </div>
+                <button class="btn small danger" id="btn-clear">Limpar</button>
+              </div>
+            </div>
+            <div class="pane" id="pane-sobre">
+              <div class="about">
+                <b style="color: #fff">PlayHub</b><br />Emulador de PlayStation 1 (PS1) no
+                navegador, com base no <b>EmulatorJS <span class="ejs-v"></span></b> (GPL-3.0),
+                RetroArch e o núcleo PCSX-ReARMed. Seus jogos nunca saem do seu aparelho.
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Termos e Condições</h3>
+                  <p>Créditos, licenças, privacidade e regras de uso.</p>
+                </div>
+                <button class="btn small" id="btn-tos">
+                  <i class="fa-solid fa-file-contract"></i> Ler
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div id="player">
+      <div class="p-bar">
+        <button class="ibtn" id="p-back" title="Voltar">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div class="p-title" id="p-title"></div>
+        <button class="ibtn" id="p-pause" title="Pausar"><i class="fa-solid fa-pause"></i></button>
+        <button class="ibtn" id="p-reset" title="Reiniciar">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+        <button class="ibtn" id="p-save" title="Salvar">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button class="ibtn" id="p-load" title="Carregar">
+          <i class="fa-solid fa-folder-open"></i>
+        </button>
+        <button class="ibtn" id="p-mute" title="Som">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button class="ibtn" id="p-full" title="Tela cheia">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+        <button class="ibtn gear" id="p-gear" title="Configurações do jogo">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+      <div id="vol" class="hidden">
+        <button class="ibtn" id="vol-ico" title="Silenciar">
+          <i class="fa-solid fa-volume-high"></i></button
+        ><input type="range" id="vol-r" min="0" max="100" step="1" aria-label="Volume" /><span
+          class="val"
+          id="vol-v"
+          >100%</span
+        >
+      </div>
+      <div class="p-stage" id="stage">
+        <div id="ejs-box"></div>
+        <div id="crt"></div>
+        <div id="fps" class="hidden">-- FPS</div>
+        <div id="pad">
+          <div class="cl">
+            <button class="pb shoulder sL" data-btn="L">L1</button>
+            <button class="pb shoulder sL2" data-btn="L2">L2</button>
+            <div class="dpad" id="dpad">
+              <span class="pb up" data-btn="UP"><i class="fa-solid fa-chevron-up"></i></span>
+              <span class="pb dn" data-btn="DOWN"><i class="fa-solid fa-chevron-down"></i></span>
+              <span class="pb lf" data-btn="LEFT"><i class="fa-solid fa-chevron-left"></i></span>
+              <span class="pb rt" data-btn="RIGHT"><i class="fa-solid fa-chevron-right"></i></span>
+            </div>
+            <div class="joy hidden" id="joy"><span class="jk"></span></div>
+          </div>
+          <div class="mids">
+            <button class="pb" data-btn="SELECT">SELECT</button>
+            <button class="pb" data-btn="START">START</button>
+          </div>
+          <div class="cr">
+            <button class="pb shoulder sR" data-btn="R">R1</button>
+            <button class="pb shoulder sR2" data-btn="R2">R2</button>
+            <div class="face">
+              <button class="pb bX" data-btn="X">△</button>
+              <button class="pb bY" data-btn="Y">□</button>
+              <button class="pb bA" data-btn="A">○</button>
+              <button class="pb bB" data-btn="B">✕</button>
+            </div>
+          </div>
+        </div>
+        <div id="ped" class="hidden">
+          <div class="ped-t">
+            <i class="fa-solid fa-up-down-left-right red"></i> Editor do gamepad<small
+              >Arraste os botões. Toque num botão para ajustar o tamanho.</small
+            >
+          </div>
+          <div class="seg" id="ped-type">
+            <button data-t="dpad"><i class="fa-solid fa-up-down-left-right"></i> Setas</button
+            ><button data-t="joy"><i class="fa-solid fa-circle-dot"></i> Joystick</button>
+          </div>
+          <label class="ped-sz"
+            ><i class="fa-solid fa-expand"></i
+            ><input type="range" id="ped-size" min="50" max="200" step="5" disabled /><span
+              id="ped-sv"
+              >--</span
+            ></label
+          >
+          <button class="btn small ghost" id="ped-def" title="Voltar ao padrão">
+            <i class="fa-solid fa-rotate-left"></i><span>Padrão</span>
+          </button>
+          <button class="btn small ghost" id="ped-cancel" title="Cancelar">
+            <i class="fa-solid fa-xmark"></i><span>Cancelar</span>
+          </button>
+          <button class="btn small" id="ped-save">
+            <i class="fa-solid fa-floppy-disk"></i><span>Salvar</span>
+          </button>
+        </div>
+        <div class="p-loading hidden" id="p-loading">
+          <div class="ld-tip hidden" id="ld-tip">
+            <i class="fa-solid fa-bell"></i
+            ><span>Ative as notificações para ser avisado quando o jogo tiver sido carregado!</span
+            ><button class="btn small" id="ld-tip-btn">
+              <i class="fa-solid fa-gear"></i> Configuração
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="gs" class="hidden">
+      <div class="gs-box">
+        <div class="gs-head">
+          <div class="gs-title">
+            <div class="icon-box"><i class="fa-solid fa-gear"></i></div>
+            <div>Configurações do jogo<small id="gs-game"></small></div>
+          </div>
+          <button class="ibtn" id="gs-x" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="gs-body">
+          <nav class="gs-nav">
+            <button class="active" data-gs="ctrl">
+              <i class="fa-solid fa-gamepad"></i>Controles
+            </button>
+            <button data-gs="video"><i class="fa-solid fa-tv"></i>Vídeo</button>
+          </nav>
+          <div class="gs-content" id="gs-content">
+            <div class="gs-pane show" id="gs-ctrl">
+              <div class="gs-sub">
+                <div class="seg" id="gs-sub">
+                  <button class="active" data-sub="kb">
+                    <i class="fa-solid fa-keyboard"></i> Teclado
+                  </button>
+                  <button data-sub="touch"><i class="fa-solid fa-hand-pointer"></i> Toque</button>
+                  <button data-sub="usb"><i class="fa-solid fa-gamepad"></i> Controle</button>
+                  <button data-sub="reset">
+                    <i class="fa-solid fa-rotate-right"></i> Reiniciar
+                  </button>
+                </div>
+              </div>
+              <div class="gs-sec show" id="sec-kb">
+                <p class="gs-hint">
+                  Clique em uma tecla e pressione a nova tecla desejada. Se ela já estiver em uso,
+                  as duas ações trocam de tecla. <b>Esc</b> cancela.
+                </p>
+                <div class="seg kb-pl" id="gs-kb-players" style="margin-bottom: 10px">
+                  <button class="active" data-p="0">Jogador 1</button
+                  ><button data-p="1">Jogador 2</button>
+                </div>
+                <div class="km" id="km-list"></div>
+              </div>
+              <div class="gs-sec" id="sec-touch">
+                <div class="row">
+                  <div>
+                    <h3>Mostrar gamepad na tela</h3>
+                    <p>Automático exibe apenas em telas de toque.</p>
+                  </div>
+                  <select class="sel" data-key="pad">
+                    <option value="auto">Automático</option>
+                    <option value="on">Sempre mostrar</option>
+                    <option value="off">Ocultar</option>
+                  </select>
+                </div>
+                <div class="row">
+                  <div><h3>Tamanho dos botões</h3></div>
+                  <div class="ctl">
+                    <input type="range" data-key="scale" min="70" max="140" step="5" /><span
+                      class="val"
+                      data-val="scale"
+                      data-suf="%"
+                    ></span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div><h3>Opacidade</h3></div>
+                  <div class="ctl">
+                    <input type="range" data-key="opacity" min="30" max="100" /><span
+                      class="val"
+                      data-val="opacity"
+                      data-suf="%"
+                    ></span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Vibração</h3>
+                    <p>Vibra ao tocar (se o aparelho suportar).</p>
+                  </div>
+                  <label class="switch"
+                    ><input type="checkbox" data-key="vib" /><span class="slider"></span
+                  ></label>
+                </div>
+                <div class="gs-h">Layout</div>
+                <div class="row">
+                  <div>
+                    <h3>Estilo do direcional</h3>
+                    <p>Setas (D-pad) ou joystick virtual.</p>
+                  </div>
+                  <select class="sel" data-key="padType">
+                    <option value="dpad">Setas</option>
+                    <option value="joy">Joystick</option>
+                  </select>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Editor do gamepad</h3>
+                    <p>
+                      Arraste cada botão para onde quiser e ajuste o tamanho. Retrato e paisagem têm
+                      layouts separados.
+                    </p>
+                  </div>
+                  <button class="btn small" id="gs-edit">
+                    <i class="fa-solid fa-up-down-left-right"></i> Editar
+                  </button>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Restaurar layout</h3>
+                    <p>Volta os botões às posições de origem.</p>
+                  </div>
+                  <button class="btn small ghost" id="gs-padreset">
+                    <i class="fa-solid fa-rotate-left"></i> Restaurar
+                  </button>
+                </div>
+              </div>
+              <div class="gs-sec" id="sec-usb">
+                <div class="gp-status" id="gp-status">
+                  <span class="led"></span
+                  ><span id="gp-name">Nenhum controle detectado. Conecte e aperte um botão.</span>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Ativar controle USB / Bluetooth</h3>
+                    <p>Usa a Gamepad API do navegador.</p>
+                  </div>
+                  <label class="switch"
+                    ><input type="checkbox" data-key="gpOn" /><span class="slider"></span
+                  ></label>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Zona morta do analógico</h3>
+                    <p>Evita movimentos involuntários.</p>
+                  </div>
+                  <div class="ctl">
+                    <input type="range" data-key="gpDead" min="5" max="60" step="5" /><span
+                      class="val"
+                      data-val="gpDead"
+                      data-suf="%"
+                    ></span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div>
+                    <h3>Trocar A/B e X/Y</h3>
+                    <p>Segue o rótulo dos botões (layout Nintendo).</p>
+                  </div>
+                  <label class="switch"
+                    ><input type="checkbox" data-key="gpSwap" /><span class="slider"></span
+                  ></label>
+                </div>
+              </div>
+              <div class="gs-sec" id="sec-reset">
+                <p class="gs-hint">
+                  Define o que o botão <b>Reiniciar</b> faz quando você já carregou um save nesta
+                  partida: voltar ao ponto do save ou começar o jogo do zero.
+                </p>
+                <div class="row">
+                  <div>
+                    <h3>Ao reiniciar o jogo</h3>
+                    <p>Vale quando há um save carregado.</p>
+                  </div>
+                  <select class="sel" id="rs-sel" data-key="resetMode">
+                    <option value="save">A partir do save</option>
+                    <option value="full">Reiniciar o jogo todo</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="gs-pane" id="gs-video">
+              <div class="gs-h">Predefinições de qualidade</div>
+              <div class="gs-pre">
+                <div class="seg" id="presets">
+                  <button data-preset="low"><i class="fa-solid fa-bolt"></i> Baixa</button>
+                  <button data-preset="mid">
+                    <i class="fa-solid fa-scale-balanced"></i> Média
+                  </button>
+                  <button data-preset="high"><i class="fa-solid fa-gem"></i> Alta</button>
+                  <button data-preset="crt"><i class="fa-solid fa-tv"></i> CRT</button>
+                </div>
+              </div>
+              <p class="gs-hint">
+                Baixa desliga todos os efeitos para render mais leve. Alta aplica suavização e
+                nitidez. CRT imita uma TV de tubo.
+              </p>
+              <div class="gs-h">Imagem</div>
+              <div class="row">
+                <div>
+                  <h3>Filtro de pixels</h3>
+                  <p>Nítido mantém os pixels; suave aplica interpolação.</p>
+                </div>
+                <div class="seg" data-key="filter">
+                  <button data-v="pixel">Nítido</button><button data-v="smooth">Suave</button>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Proporção da tela</h3></div>
+                <select class="sel" data-key="aspect">
+                  <option value="orig">Original (pixels quadrados)</option>
+                  <option value="43">4:3 (TV antiga)</option>
+                  <option value="169">16:9</option>
+                  <option value="stretch">Esticar na tela</option>
+                </select>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Escala inteira</h3>
+                  <p>Pixel perfeito: só amplia em múltiplos inteiros.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="intScale" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div><h3>Zoom</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="zoom" min="80" max="140" step="5" /><span
+                    class="val"
+                    data-val="zoom"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Rotação</h3></div>
+                <div class="seg" data-key="rot">
+                  <button data-v="0">0°</button><button data-v="90">90°</button
+                  ><button data-v="180">180°</button><button data-v="270">270°</button>
+                </div>
+              </div>
+              <div class="gs-h">Cores</div>
+              <div class="row">
+                <div><h3>Modo de cor</h3></div>
+                <div class="seg" data-key="color">
+                  <button data-v="normal">Normal</button><button data-v="vivid">Vívido</button
+                  ><button data-v="sepia">Sépia</button><button data-v="gray">P&amp;B</button>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Brilho</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="brightness" min="60" max="150" /><span
+                    class="val"
+                    data-val="brightness"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Contraste</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="contrast" min="60" max="150" /><span
+                    class="val"
+                    data-val="contrast"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Saturação</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="saturation" min="0" max="200" /><span
+                    class="val"
+                    data-val="saturation"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="gs-h">Efeitos</div>
+              <div class="row">
+                <div>
+                  <h3>Nitidez</h3>
+                  <p>Realça as bordas da imagem.</p>
+                </div>
+                <div class="ctl">
+                  <input type="range" data-key="sharp" min="0" max="100" step="5" /><span
+                    class="val"
+                    data-val="sharp"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div><h3>Linhas de varredura</h3></div>
+                <div class="ctl">
+                  <input type="range" data-key="scan" min="0" max="60" step="5" /><span
+                    class="val"
+                    data-val="scan"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Vinheta</h3>
+                  <p>Escurece as bordas da tela.</p>
+                </div>
+                <div class="ctl">
+                  <input type="range" data-key="vig" min="0" max="80" step="5" /><span
+                    class="val"
+                    data-val="vig"
+                    data-suf="%"
+                  ></span>
+                </div>
+              </div>
+              <div class="gs-h">Desempenho</div>
+              <div class="row">
+                <div>
+                  <h3>Taxa de quadros</h3>
+                  <p>Limita a velocidade do emulador. Nativo segue o monitor.</p>
+                </div>
+                <div class="seg" data-key="fps">
+                  <button data-v="30">30</button><button data-v="50">50</button
+                  ><button data-v="60">60</button><button data-v="0">Nativo</button>
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Modo desempenho</h3>
+                  <p>Desliga cores, nitidez e efeitos para render mais leve.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="perf" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div>
+                  <h3>Otimização automática</h3>
+                  <p>Se o jogo travar, o emulador ajusta a qualidade sozinho e avisa você.</p>
+                </div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="autoOpt" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div><h3>Pausar ao trocar de aba</h3></div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="autoPause" /><span class="slider"></span
+                ></label>
+              </div>
+              <div class="row">
+                <div><h3>Mostrar contador de FPS</h3></div>
+                <label class="switch"
+                  ><input type="checkbox" data-key="showFps" /><span class="slider"></span
+                ></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="gs-foot">
+          <button class="btn small ghost left" id="gs-reset">
+            <i class="fa-solid fa-rotate-left"></i><span> Reiniciar aba</span>
+          </button>
+          <button class="btn small ghost" id="gs-cancel">Cancelar</button>
+          <button class="btn small" id="gs-save">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="sv" class="hidden">
+      <div class="gs-box sv-box">
+        <div class="gs-head">
+          <div class="gs-title">
+            <div class="icon-box"><i class="fa-solid fa-floppy-disk" id="sv-ico"></i></div>
+            <div><span id="sv-ttl">Salvar jogo</span><small id="sv-game"></small></div>
+          </div>
+          <button class="ibtn" id="sv-x" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="sv-list" id="sv-list"></div>
+      </div>
+    </div>
+    <div id="rs" class="hidden">
+      <div class="gs-box rs-box" role="alertdialog" aria-modal="true" aria-labelledby="rs-msg">
+        <div class="rs-body">
+          <div class="rs-ico"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <p id="rs-msg"><b>Atenção:</b> o jogo será reiniciado a partir do seu save.</p>
+          <small id="rs-slot"></small><small id="rs-tip"></small
+          ><label class="rs-chk"
+            ><input type="checkbox" id="rs-hide" /> Não exibir este aviso novamente</label
+          >
+        </div>
+        <div class="rs-act">
+          <button class="btn small ghost" id="rs-cancel">Cancelar</button
+          ><button class="btn small ghost" id="rs-set">
+            <i class="fa-solid fa-gear"></i> Ajustar nas configurações</button
+          ><button class="btn small" id="rs-ok">
+            <i class="fa-solid fa-rotate-right"></i> Reiniciar
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="tp" class="hidden">
+      <div class="gs-box rs-box" role="alertdialog" aria-modal="true" aria-labelledby="tp-msg">
+        <div class="rs-body">
+          <div class="rs-ico"><i class="fa-solid fa-lightbulb"></i></div>
+          <p id="tp-msg"></p>
+          <small id="tp-sub"></small
+          ><label class="rs-chk"
+            ><input type="checkbox" id="tp-hide" /> Não exibir este aviso novamente</label
+          >
+        </div>
+        <div class="rs-act">
+          <button class="btn small ghost" id="tp-no">Escolher outro slot</button
+          ><button class="btn small" id="tp-ok">Salvar mesmo assim</button>
+        </div>
+      </div>
+    </div>
+    <div id="mpl" class="hidden">
+      <div class="ld" id="mpl-ld">
+        <i class="ld-orbit"></i
+        ><svg class="ld-svg" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="ld-trk" cx="50" cy="50" r="46" />
+          <circle class="ld-arc" cx="50" cy="50" r="46" /></svg
+        ><img
+          src="logo.png"
+          class="logo-mark"
+          alt=""
+          onerror="
+            this.onerror = null;
+            this.src =
+              'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZiMzMzMyI+PHBhdGggZD0iTTIxIDEyTDMgMjBWMTRMMTggMTJMMyAxMFY0TDIxIDEyWiIvPjwvc3ZnPg==';
+          "
+        />
+        <div class="ld-name" id="mpl-name"></div>
+        <div class="ld-bar" id="mpl-bar"><i class="ld-fill"></i></div>
+        <div class="ld-pct" id="mpl-pct"><b>0</b>%</div>
+        <div class="ld-pct hidden" id="mpl-cnt"></div>
+        <div class="ld-st" id="mpl-st"></div>
+      </div>
+      <div class="mpl-act hidden" id="mpl-act">
+        <button class="btn small" id="mpl-share">
+          <i class="fa-solid fa-share-nodes"></i> Compartilhar sala</button
+        ><button class="btn small ghost" id="mpl-cancel">
+          <i class="fa-solid fa-xmark"></i> Cancelar</button
+        ><button class="btn small hidden" id="mpl-cont">
+          <i class="fa-solid fa-arrow-right"></i> Continuar
+        </button>
+      </div>
+    </div>
+    <div id="mpc" class="hidden">
+      <div class="gs-box" style="max-width: 660px">
+        <div class="gs-head">
+          <div class="gs-title">
+            <div class="icon-box"><i class="fa-solid fa-gamepad"></i></div>
+            <div><span id="mpc-name">Sala</span><small id="mpc-game"></small></div>
+          </div>
+        </div>
+        <div class="gs-content" style="min-height: 0; max-height: none">
+          <div class="mpc-players" id="mpc-players"></div>
+          <p class="gs-hint" id="mpc-hint"></p>
+          <div style="overflow-x: auto" id="mpc-keys">
+            <table class="keys mpk" id="mpc-table"></table>
+          </div>
+        </div>
+        <div class="gs-foot">
+          <button class="btn small ghost left" id="mpc-leave">
+            <i class="fa-solid fa-right-from-bracket"></i><span> Sair</span></button
+          ><button class="btn small ghost" id="mpc-share">
+            <i class="fa-solid fa-share-nodes"></i> Compartilhar</button
+          ><span class="mpc-wait" id="mpc-wait"></span
+          ><button class="btn small" id="mpc-start">
+            <i class="fa-solid fa-play"></i> Iniciar jogo
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mpsh" class="hidden" role="dialog" aria-modal="true" aria-labelledby="mpsh-t">
+      <div class="gs-box">
+        <div class="gs-head">
+          <div class="gs-title">
+            <div class="icon-box"><i class="fa-solid fa-share-nodes"></i></div>
+            <div><span id="mpsh-t">Compartilhar sala</span><small id="mpsh-room"></small></div>
+          </div>
+        </div>
+        <div class="gs-content" style="min-height: 0; max-height: none">
+          <div class="sh-row" id="sh-link-row">
+            <label for="sh-link">Link da sala</label>
+            <div class="sh-field">
+              <input
+                class="txt"
+                id="sh-link"
+                readonly
+                spellcheck="false"
+                autocomplete="off"
+              /><button class="btn small" id="sh-link-copy" type="button">
+                <i class="fa-solid fa-copy"></i><span>Copiar</span>
+              </button>
+            </div>
+          </div>
+          <div class="sh-row">
+            <label for="sh-code">Código da sala</label>
+            <div class="sh-field">
+              <input
+                class="txt sh-code"
+                id="sh-code"
+                readonly
+                spellcheck="false"
+                autocomplete="off"
+              /><button class="btn small" id="sh-code-copy" type="button">
+                <i class="fa-solid fa-copy"></i><span>Copiar</span>
+              </button>
+            </div>
+          </div>
+          <p class="gs-hint" id="sh-hint"></p>
+        </div>
+        <div class="gs-foot">
+          <button class="btn small ghost" id="sh-native" type="button">
+            <i class="fa-solid fa-share-nodes"></i><span> Enviar</span></button
+          ><button class="btn small ghost" id="sh-close" type="button">
+            <i class="fa-solid fa-xmark"></i><span> Fechar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="tapgo">
+      <i class="fa-solid fa-expand"></i><span>Toque para jogar</span
+      ><small>Tela cheia e deitado</small>
+    </div>
+    <div id="rotmsg">
+      <i class="fa-solid fa-mobile-screen-button"></i><span>Gire o celular para jogar</span>
+    </div>
+    <div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-text"></span></div>
+    <script src="app.js"></script>
+    <script src="optimizer.js"></script>
+    <script src="multiplayer.js"></script>
+  </body>
+</html>

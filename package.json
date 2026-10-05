@@ -1,0 +1,13 @@
+{
+  "name": "playhub-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Servidor de salas multiplayer do PlayHub (descoberta de salas + sinalização WebRTC)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

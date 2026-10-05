@@ -1,0 +1,52 @@
+PLAYHUB - O QUE MUDOU E COMO USAR
+=================================
+
+1) NAO PRECISA MAIS DE node_modules
+   O servidor agora funciona sozinho, so com o Node.js instalado (https://nodejs.org, versao LTS).
+   Pode APAGAR a pasta node_modules e nunca mais rodar "npm install".
+   Para ligar: dois cliques em iniciar.bat. Para ligar junto com o Windows: INSTALAR-UMA-VEZ.bat.
+
+2) OTIMIZADOR (funciona para qualquer jogo de PS1)
+   - Configuracoes > Video > "Nivel minimo de otimizacao": 0 a 4 (Ultra).
+   - Com "Otimizacao automatica" ligada, o PlayHub ja identifica celular fraco/pouca memoria e abre
+     o jogo num nivel adequado. Se travar, sobe sozinho (2 niveis de uma vez se estiver MUITO lento)
+     e lembra o nivel para aquele jogo.
+   - Aparelho bem fraco? Deixe o nivel minimo em "Ultra" e feche as outras abas/apps.
+   Limite honesto: emular PS1 exige um processador de verdade. Celulares de entrada (Android) rodam
+   no modo Ultra; telefones "de tecla" (Nokia simples/KaiOS) nao tem poder nem memoria para isso.
+
+3) MULTIPLAYER NO CELULAR (3G/4G/5G)
+   - O video agora se adapta a rede em tempo real (perda de pacotes, latencia, banda): baixa a
+     qualidade quando a conexao piora e sobe quando melhora. Antes ficava fixo em 6 Mbps.
+   - O convidado ajusta o "colchao" do video sozinho para nao picotar.
+   - Se a rede cair ou trocar (Wi-Fi <-> 4G), o jogo tenta reconectar antes de encerrar.
+   - Em 4G/5G a conexao direta entre os dois celulares muitas vezes NAO e possivel (a operadora
+     bloqueia). Nesses casos o video passa por um servidor TURN. Os TURN gratuitos publicos sao
+     lentos e instaveis. Para ficar bom, crie o seu (gratis):
+       a) Crie conta em https://www.metered.ca (plano gratis: 20 GB/mes de TURN)
+       b) Crie uma credencial e copie a lista de "iceServers" em formato JSON
+       c) No Render: Environment > nova variavel PLAYHUB_ICE com esse JSON
+          (no PC: defina a variavel PLAYHUB_ICE antes de rodar o server.js)
+     Exemplo do valor:
+       [{"urls":"turn:global.relay.metered.ca:443","username":"SEU_USUARIO","credential":"SUA_SENHA"}]
+
+4) CONVIDAR AMIGOS
+   - Nova aba "Convidar" (e botao "Convidar amigos" dentro de Multiplayer).
+   - Dentro de uma sala, "Compartilhar" tem link da sala + codigo + botoes WhatsApp/Telegram.
+   - O link so funciona na internet se o PlayHub estiver publicado (item 5). Em localhost ele
+     so abre para quem esta no mesmo Wi-Fi, e o PlayHub avisa isso na tela.
+
+5) PUBLICAR NA INTERNET (para amigos em qualquer lugar)
+   - Suba esta pasta num repositorio do GitHub e crie um "Web Service" no Render (https://render.com)
+     apontando para ele; o render.yaml ja esta pronto. Sem dependencias, o build e instantaneo.
+   - O link da sala usa o endereco do Render automaticamente.
+   - O plano gratis do Render "dorme" depois de ~15 min sem uso; a primeira visita demora cerca
+     de 1 minuto para acordar. Um monitor gratis (ex.: UptimeRobot) chamando /health evita isso.
+
+6) MANDAR O HTML PARA OUTRO APARELHO
+   Antes: mandar so o index.html mostrava a pagina sem estilo e sem funcionar, porque o CSS e os
+   scripts sao arquivos separados. Agora:
+     - De dois cliques em gerar-html-unico.bat (ou: node build-unico.js https://seu-site.onrender.com)
+     - Ele cria o playhub-unico.html, UM arquivo com tudo dentro. Mande esse por WhatsApp.
+     - O aparelho precisa de internet (o emulador e as fontes vem da internet).
+     - Melhor ainda: mande o LINK do site publicado em vez de arquivo.

@@ -1,0 +1,15 @@
+# Hospedagem gratuita (Render): o servidor fica no ar, sem .bat e sem PC ligado.
+# O PlayHub não tem dependências, então não há nada para instalar no build.
+services:
+  - type: web
+    name: playhub
+    runtime: node
+    plan: free
+    buildCommand: echo "sem dependencias"
+    startCommand: node server.js --no-open
+    healthCheckPath: /health
+    envVars:
+      - key: NO_OPEN
+        value: "1"
+      # Opcional, mas MUITO recomendado para jogar em 4G/5G: servidor TURN próprio (veja LEIA-ME).
+      # Crie a variável PLAYHUB_ICE no painel do Render com o JSON da lista de servidores.
