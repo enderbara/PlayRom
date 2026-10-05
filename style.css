@@ -3199,20 +3199,6 @@ body:not([data-sys]) .tab[data-view="multi"] {
   display: none !important;
 }
 
-.home-grid .mp-opt .on {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-.home-grid .mp-opt .on i {
-  color: #3ddc84;
-}
-.home-grid .mp-opt .on b {
-  color: #fff;
-}
 .mp-other {
   display: flex;
   align-items: center;
@@ -3229,118 +3215,181 @@ body:not([data-sys]) .tab[data-view="multi"] {
   color: var(--red);
 }
 
-/* ===== Carrossel de consoles ===== */
-.cf {
+/* ===== Seletor de console (carrossel) ===== */
+#view-home .cf {
   position: relative;
-  margin-top: 8px;
+  margin-top: 6px;
 }
-.home-grid.mp-hub {
+#view-home .home-grid.mp-hub {
   display: block;
   position: relative;
-  height: clamp(300px, 52vh, 380px);
-  margin: 10px 0 0;
-  perspective: 1100px;
+  height: clamp(330px, 52vh, 390px);
+  margin: 8px 0 0;
+  perspective: 1200px;
   overflow: hidden;
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
 }
-.home-grid.dragging {
+#view-home .home-grid.dragging {
   cursor: grabbing;
 }
-.cf-card {
+#view-home .cf-card {
+  --ac: #fb3333;
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(300px, 64vw);
+  width: min(300px, 66vw);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 6px;
-  padding: 36px 20px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 22px;
+  padding: 30px 20px 24px;
+  background: #101010;
+  border: 1px solid #ffffff14;
+  border-radius: 26px;
   color: inherit;
+  outline: 0;
+  overflow: hidden;
   will-change: transform, opacity;
-  transition:
-    transform 0.5s var(--ease),
-    opacity 0.4s var(--ease),
-    border-color 0.3s,
-    box-shadow 0.4s;
   -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease,
+    border-color 0.35s,
+    box-shadow 0.45s;
 }
-.home-grid.dragging .cf-card {
-  transition: border-color 0.3s;
+#view-home .cf-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--ac);
+  opacity: 0.35;
+  transition: opacity 0.35s;
 }
-.cf-card.active {
-  border-color: #fb333380;
-  box-shadow: 0 18px 40px #fb333322;
+#view-home .home-grid.dragging .cf-card {
+  transition:
+    border-color 0.35s,
+    box-shadow 0.45s;
+}
+#view-home .cf-card.active {
+  border-color: color-mix(in srgb, var(--ac) 55%, transparent);
+  box-shadow:
+    0 22px 48px #000000b3,
+    0 0 0 1px color-mix(in srgb, var(--ac) 25%, transparent);
   cursor: pointer;
 }
-.cf-card .icon-box {
-  margin-bottom: 6px;
+#view-home .cf-card.active::before {
+  opacity: 1;
 }
-.cf-card h3 {
-  font-size: 1.2rem;
+#view-home .cf-ico {
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  margin-top: 6px;
+  border-radius: 50%;
+  font-size: 2.1rem;
+  color: var(--ac);
+  background: color-mix(in srgb, var(--ac) 14%, #101010);
+  border: 1px solid color-mix(in srgb, var(--ac) 30%, transparent);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.cf-card p {
-  color: var(--muted);
-  font-size: 0.85rem;
+#view-home .cf-card.active .cf-ico {
+  transform: scale(1.1);
 }
-.cf-card .on {
+#view-home .cf-card h3 {
+  margin: 18px 0 4px;
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+}
+#view-home .cf-card p {
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #ffffff0d;
+  color: #b4b4b4;
+  font-size: 0.8rem;
+}
+#view-home .cf-card .on {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 7px;
+  margin-top: 14px;
   font-size: 0.8rem;
-  color: var(--muted);
+  color: #9a9a9a;
 }
-.cf-card .on i {
+#view-home .cf-card .on i {
   color: #3ddc84;
+  font-size: 0.7rem;
 }
-.cf-card .on b {
+#view-home .cf-card .on b {
   color: #fff;
 }
-.cf-arrow {
+#view-home .cf-go {
+  margin-top: 18px;
+  padding: 11px 30px;
+  border-radius: 999px;
+  background: var(--ac);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+#view-home .cf-card.active .cf-go {
+  opacity: 1;
+  transform: none;
+}
+#view-home .cf-card.active:hover .cf-go {
+  filter: brightness(1.12);
+}
+#view-home .cf-arrow {
   position: absolute;
-  top: 148px;
+  top: calc(clamp(330px, 52vh, 390px) / 2 - 6px);
   z-index: 20;
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
+  padding: 0;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--card);
+  border: 1px solid #ffffff1f;
+  background: #141414;
   color: #fff;
   cursor: pointer;
   transition:
     opacity 0.2s,
-    border-color 0.2s;
+    border-color 0.2s,
+    transform 0.2s;
 }
-.cf-arrow:hover:not(:disabled) {
-  border-color: #fb333380;
+#view-home .cf-arrow:hover:not(:disabled) {
+  border-color: #fb333399;
+  transform: scale(1.06);
 }
-.cf-arrow:disabled {
-  opacity: 0.25;
+#view-home .cf-arrow:disabled {
+  opacity: 0.2;
   cursor: default;
 }
-.cf-prev {
+#view-home .cf-prev {
   left: 0;
 }
-.cf-next {
+#view-home .cf-next {
   right: 0;
 }
-.cf-dots {
+#view-home .cf-dots {
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 16px;
 }
-.cf-dot {
+#view-home .cf-dot {
   width: 8px;
   height: 8px;
   padding: 0;
@@ -3349,15 +3398,25 @@ body:not([data-sys]) .tab[data-view="multi"] {
   background: #ffffff33;
   cursor: pointer;
   transition:
-    width 0.3s var(--ease),
+    width 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     background 0.3s;
 }
-.cf-dot.active {
-  width: 24px;
-  background: var(--red);
+#view-home .cf-dot.active {
+  width: 26px;
+  background: #fb3333;
+}
+#view-home .cf-hint {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #8a8a8a;
 }
 @media (hover: none), (max-width: 700px) {
-  .cf-arrow {
+  #view-home .cf-arrow {
     display: none;
   }
+}
+body.reduce-anim #view-home .cf-card,
+body.reduce-anim #view-home .cf-card * {
+  transition-duration: 0.01ms !important;
 }
