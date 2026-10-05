@@ -72,7 +72,7 @@ function mpMq(brokers, ms) {
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
     const me = hex(4),
-      NS = "playhub1",
+      NS = "playrom1",
       enc = new TextEncoder(),
       dec = new TextDecoder();
     const links = [],
