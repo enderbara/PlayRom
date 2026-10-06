@@ -3678,3 +3678,42 @@ body.reduce-anim #view-home .cf-card * {
 #st2 .dots {
   margin-top: 26px;
 }
+
+/* =====================================================
+   ANÚNCIOS (Adsterra 300x250)
+   ===================================================== */
+.ad-slot {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 32px auto 8px;
+  max-width: 100%;
+}
+.ad-slot.on {
+  display: flex;
+  animation: fadeUp 0.5s var(--ease) both;
+}
+.ad-label {
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #555;
+}
+.ad-box {
+  width: 300px;
+  max-width: 100%;
+  min-height: 250px;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+.ad-box iframe {
+  display: block;
+  border: 0;
+  max-width: 100%;
+}
+body.playing .ad-slot {
+  display: none !important;
+}
