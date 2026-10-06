@@ -3202,7 +3202,7 @@ body:not([data-sys]) .tab[data-view="multi"] {
 }
 
 /* =====================================================
-   SELETOR DE CONSOLE (carrossel 3D) — versão melhorada
+   SELETOR DE CONSOLE (carrossel 3D)
    Mantém as mesmas classes que o JS já usa:
    .cf  .home-grid.mp-hub  .cf-card(.active)  .cf-ico
    .on  .cf-go  .cf-arrow(.cf-prev/.cf-next)  .cf-dots
@@ -3271,8 +3271,8 @@ body:not([data-sys]) .tab[data-view="multi"] {
   -webkit-tap-highlight-color: transparent;
   -webkit-user-drag: none;
   transition:
-    transform 0.55s var(--cf-ease),
-    opacity 0.4s ease,
+    transform 0.7s cubic-bezier(0.25, 1, 0.35, 1),
+    opacity 0.5s ease,
     border-color 0.35s,
     box-shadow 0.45s;
 }
@@ -3302,6 +3302,7 @@ body:not([data-sys]) .tab[data-view="multi"] {
   position: relative;
   z-index: 1;
 }
+/* durante o arrasto o card segue o dedo/mouse sem atraso */
 #view-home .home-grid.dragging .cf-card {
   transition:
     border-color 0.35s,
@@ -3440,7 +3441,7 @@ body:not([data-sys]) .tab[data-view="multi"] {
   transform: scale(0.96);
 }
 
-/* Setas (agora realmente centralizadas na vertical) */
+/* Setas (centralizadas na vertical) */
 #view-home .cf-arrow {
   position: absolute;
   top: calc(8px + var(--cf-h) / 2);
@@ -3556,16 +3557,8 @@ body:not([data-sys]) .tab[data-view="multi"] {
   }
 }
 
-/* Reduzir animações (opção do app ou do sistema) */
+/* Reduzir animações (opção do próprio app) */
 body.reduce-anim #view-home .cf-card,
 body.reduce-anim #view-home .cf-card * {
   transition-duration: 0.01ms !important;
-}
-@media (prefers-reduced-motion: reduce) {
-  #view-home .cf-card,
-  #view-home .cf-card *,
-  #view-home .cf-dot,
-  #view-home .cf-arrow {
-    transition-duration: 0.01ms !important;
-  }
 }
