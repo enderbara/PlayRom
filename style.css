@@ -3562,3 +3562,47 @@ body.reduce-anim #view-home .cf-card,
 body.reduce-anim #view-home .cf-card * {
   transition-duration: 0.01ms !important;
 }
+
+/* =====================================================
+   NOVAS REGRAS: etapa da pasta (4 consoles) e botão Voltar
+   ===================================================== */
+
+/* Botão "Voltar" criado pelo JS (classes: btn small ghost cf-back) */
+#view-home .cf-back {
+  margin-top: 14px;
+}
+
+/* A etapa da pasta ficou maior: permite rolar em telas baixas */
+.step-card {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+/* Aviso em destaque: nenhuma outra pasta é permitida */
+.warn-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  text-align: left;
+  background: #fb33331a;
+  border: 1px solid rgba(251, 51, 51, 0.45);
+  border-left: 4px solid var(--red);
+  border-radius: 12px;
+}
+.warn-box > i {
+  flex: none;
+  margin-top: 2px;
+  color: var(--red);
+  font-size: 1.05rem;
+}
+.warn-box p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #ffb3b3;
+}
+.warn-box b {
+  color: #fff;
+}
