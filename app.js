@@ -324,7 +324,9 @@ function renderHome(startIdx) {
   box.querySelectorAll(".cf-back").forEach((x) => x.remove());
 
   const ROOT = ["ps1", "md", "atari"],
-    keys = homeSub ? HOME_GROUPS[homeSub].kids : ROOT;
+    /* card de publicidade: só no carrossel principal e fora do modo deitado de celular (sem espaço) */
+    adOk = !homeSub && !matchMedia("(orientation: landscape) and (max-height: 480px)").matches,
+    keys = homeSub ? HOME_GROUPS[homeSub].kids : adOk ? ROOT.concat("ad") : ROOT;
 
   /* título e subtítulo mudam dentro do grupo */
   const ttl = $("#view-home .title"),
@@ -352,6 +354,22 @@ function renderHome(startIdx) {
   }
 
   const cards = keys.map((k) => {
+    if (k === "ad") {
+      const d = document.createElement("div");
+      d.className = "cf-card ad-card";
+      d.setAttribute("role", "group");
+      d.setAttribute("aria-label", "Publicidade");
+      d.style.setProperty("--ac", "#6b7280");
+      d.innerHTML =
+        '<span class="ad-tag">Publicidade</span><div class="ad-box"></div>' +
+        '<button type="button" class="cf-go ad-back">Voltar aos consoles</button>';
+      d.querySelector(".ad-back").onclick = (e) => {
+        e.stopPropagation();
+        go(0);
+      };
+      g.appendChild(d);
+      return d;
+    }
     const grp = HOME_GROUPS[k],
       c = grp || CONSOLES[k],
       n = kidsOf(k).reduce((s, x) => s + library.filter((l) => (l.sys || "ps1") === x).length, 0),
@@ -388,7 +406,7 @@ function renderHome(startIdx) {
     const d = document.createElement("button");
     d.type = "button";
     d.className = "cf-dot";
-    d.setAttribute("aria-label", (HOME_GROUPS[k] || CONSOLES[k]).name);
+    d.setAttribute("aria-label", k === "ad" ? "Publicidade" : (HOME_GROUPS[k] || CONSOLES[k]).name);
     d.onclick = () => go(i);
     dotsEl.appendChild(d);
     return d;
@@ -429,6 +447,7 @@ function renderHome(startIdx) {
     c.onclick = () => {
       if (cfMoved) return;
       if (i !== cfIdx) go(i);
+      else if (keys[i] === "ad") return;
       else if (HOME_GROUPS[keys[i]]) {
         homeSub = keys[i];
         renderHome(0);
