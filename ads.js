@@ -5,12 +5,15 @@
     W = 300,
     H = 250;
 
-  /* onde cada banner entra: [seletor do container, id do slot] */
+  /* Anúncios fixos no fim das telas: [seletor do container, id do slot].
+     Na tela de Consoles o anúncio é um card do carrossel (criado pelo app.js).
+     Regra: no máximo 1 anúncio por tela e nenhum durante o jogo, configurações ou Termos. */
   var PLACES = [
     ["#view-library .container", "ad-lib"],
     ["#view-multi .container", "ad-multi"],
   ];
-  var slots = [];
+  var slots = [],
+    cardDead = false;
 
   function ready() {
     var b = document.body;
@@ -28,24 +31,29 @@
     s.id = id;
     s.innerHTML = '<span class="ad-label">Publicidade</span><div class="ad-box"></div>';
     parent.appendChild(s);
-    s._vis = false;
     return s;
   }
 
-  function fill(s) {
-    var box = s.querySelector(".ad-box");
+  /* o Adsterra lê o atOptions global quando o script executa */
+  function load(box, onFail) {
     if (box.firstChild) return;
-    var f = document.createElement("iframe");
-    f.width = W;
-    f.height = H;
-    f.title = "Publicidade";
-    f.setAttribute("scrolling", "no");
-    f.setAttribute("frameborder", "0");
-    f.srcdoc =
-      '<!doctype html><html><body style="margin:0;background:transparent">' +
-      "<script>atOptions={'key':'" + KEY + "','format':'iframe','height':" + H + ",'width':" + W + ",'params':{}};<\/script>" +
-      '<script src="' + SRC + '"><\/script></body></html>';
-    box.appendChild(f);
+    window.atOptions = { key: KEY, format: "iframe", height: H, width: W, params: {} };
+    var sc = document.createElement("script");
+    sc.async = true;
+    sc.src = SRC;
+    sc.onerror = function () {
+      console.warn("[ads] bloqueado ou indisponível:", SRC);
+      box.textContent = "";
+      onFail();
+    };
+    box.appendChild(sc);
+  }
+
+  function fill(s) {
+    load(s.querySelector(".ad-box"), function () {
+      s.classList.remove("on");
+      s._dead = true; /* não tenta de novo nesta sessão */
+    });
     s.classList.add("on");
   }
 
@@ -55,39 +63,36 @@
   }
 
   function init() {
-    var io =
-      "IntersectionObserver" in window
-        ? new IntersectionObserver(
-            function (es) {
-              es.forEach(function (e) {
-                e.target._vis = e.isIntersecting;
-              });
-            },
-            { rootMargin: "200px" },
-          )
-        : null;
-
     PLACES.forEach(function (p) {
       var c = document.querySelector(p[0]);
       if (!c || document.getElementById(p[1])) return;
-      var s = make(c, p[1]);
-      slots.push(s);
-      io ? io.observe(s) : (s._vis = true);
+      slots.push(make(c, p[1]));
     });
 
-    /* carrega os que estão visíveis quando tudo estiver liberado */
     setInterval(function () {
       if (!ready()) return;
+      /* banners do fim das telas: carrega quando a tela está aberta */
       slots.forEach(function (s) {
-        /* o slot está display:none até carregar, então o observer não o vê: usa o container */
         var vis = s.parentElement && s.parentElement.closest(".view.show");
-        vis && fill(s);
+        vis && !s._dead && fill(s);
       });
+      /* card do carrossel: só carrega quando ele é o card central (ativo) */
+      if (!cardDead && document.querySelector("#view-home.show")) {
+        var box = document.querySelector("#view-home .cf-card.ad-card.active .ad-box");
+        box &&
+          load(box, function () {
+            cardDead = true;
+          });
+      }
     }, 1000);
 
     /* ao entrar num jogo, remove os anúncios (libera CPU para o emulador) */
     new MutationObserver(function () {
-      if (document.body.classList.contains("playing")) slots.forEach(clear);
+      if (!document.body.classList.contains("playing")) return;
+      slots.forEach(clear);
+      document.querySelectorAll(".ad-card .ad-box").forEach(function (b) {
+        b.textContent = "";
+      });
     }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
   }
 
