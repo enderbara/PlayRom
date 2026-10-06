@@ -3208,17 +3208,19 @@ body:not([data-sys]) .tab[data-view="multi"] {
    .on  .cf-go  .cf-arrow(.cf-prev/.cf-next)  .cf-dots
    .cf-dot(.active)  .cf-hint  .dragging
    ===================================================== */
-#view-home .cf {
+#view-home {
   --cf-h: clamp(330px, 52vh, 390px);
   --cf-card-w: min(300px, 66vw);
   --cf-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  position: relative;
-  margin-top: 6px;
 }
 @supports (height: 1dvh) {
-  #view-home .cf {
+  #view-home {
     --cf-h: clamp(330px, 52dvh, 390px);
   }
+}
+#view-home .cf {
+  position: relative;
+  margin-top: 6px;
 }
 
 /* Palco: perspectiva 3D + fade nas bordas */
@@ -3531,7 +3533,7 @@ body:not([data-sys]) .tab[data-view="multi"] {
 
 /* Celular deitado: carrossel mais compacto */
 @media (orientation: landscape) and (max-height: 480px) {
-  #view-home .cf {
+  #view-home {
     --cf-h: 270px;
     --cf-card-w: min(250px, 50vw);
   }
