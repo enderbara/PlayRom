@@ -23,9 +23,7 @@ body {
 body {
   background: var(--bg);
   color: #fff;
-  font-family:
-    Plus Jakarta Sans,
-    sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   overflow: hidden;
   overscroll-behavior: none;
 }
@@ -226,7 +224,7 @@ body.booting .app-header {
 .ld-pct {
   top: calc(100% + 54px);
   font:
-    600 0.74rem Space Grotesk,
+    600 0.74rem "Space Grotesk",
     sans-serif;
   letter-spacing: 0.16em;
   color: #bbb;
@@ -244,7 +242,7 @@ body.booting .app-header {
 .ld-name {
   bottom: calc(100% + 34px);
   font:
-    700 1.05rem Space Grotesk,
+    700 1.05rem "Space Grotesk",
     sans-serif;
   letter-spacing: 0.02em;
   animation: fadeUp 0.8s var(--ease) 0.2s backwards;
@@ -310,9 +308,7 @@ body.reduce-anim .p-loading * {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family:
-    Space Grotesk,
-    sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -411,9 +407,7 @@ body.reduce-anim .p-loading * {
   margin: 0 auto;
 }
 h1.title {
-  font-family:
-    Space Grotesk,
-    sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 1.7rem;
   letter-spacing: -0.02em;
 }
@@ -488,9 +482,7 @@ h1.title {
   }
 }
 .step-title {
-  font-family:
-    Space Grotesk,
-    sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 1.7rem;
   margin-bottom: 8px;
 }
@@ -1664,9 +1656,7 @@ kbd {
   height: 54px;
   border-radius: 50%;
   font-size: 1.05rem;
-  font-family:
-    Space Grotesk,
-    sans-serif;
+  font-family: "Space Grotesk", sans-serif;
 }
 .face .bX {
   left: 55px;
@@ -1804,9 +1794,7 @@ kbd {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family:
-    Space Grotesk,
-    sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
 }
@@ -1822,9 +1810,7 @@ kbd {
 }
 .gs-title small {
   display: block;
-  font-family:
-    Plus Jakarta Sans,
-    sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-weight: 500;
   font-size: 0.72rem;
   color: var(--muted);
@@ -2305,14 +2291,14 @@ kbd {
   align-items: center;
   gap: 8px;
   font:
-    700 0.85rem Space Grotesk,
+    700 0.85rem "Space Grotesk",
     sans-serif;
   margin-right: auto;
   white-space: nowrap;
 }
 .ped-t small {
   font:
-    500 0.72rem Plus Jakarta Sans,
+    500 0.72rem "Plus Jakarta Sans",
     sans-serif;
   color: var(--muted);
 }
@@ -2906,7 +2892,7 @@ body.mpg #p-load {
   flex-direction: column;
   gap: 14px;
   font:
-    600 1rem Plus Jakarta Sans,
+    600 1rem "Plus Jakarta Sans",
     sans-serif;
   text-align: center;
   padding: 24px;
@@ -2946,7 +2932,7 @@ body.mpg #p-load {
   flex-direction: column;
   gap: 10px;
   font:
-    700 1.2rem Plus Jakarta Sans,
+    700 1.2rem "Plus Jakarta Sans",
     sans-serif;
   cursor: pointer;
 }
@@ -2956,7 +2942,7 @@ body.mpg #p-load {
 }
 #tapgo small {
   font:
-    500 0.8rem Plus Jakarta Sans,
+    500 0.8rem "Plus Jakarta Sans",
     sans-serif;
   color: #aaa;
 }
@@ -3215,32 +3201,53 @@ body:not([data-sys]) .tab[data-view="multi"] {
   color: var(--red);
 }
 
-/* ===== Seletor de console (carrossel) ===== */
+/* =====================================================
+   SELETOR DE CONSOLE (carrossel 3D) — versão melhorada
+   Mantém as mesmas classes que o JS já usa:
+   .cf  .home-grid.mp-hub  .cf-card(.active)  .cf-ico
+   .on  .cf-go  .cf-arrow(.cf-prev/.cf-next)  .cf-dots
+   .cf-dot(.active)  .cf-hint  .dragging
+   ===================================================== */
 #view-home .cf {
+  --cf-h: clamp(330px, 52vh, 390px);
+  --cf-card-w: min(300px, 66vw);
+  --cf-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   margin-top: 6px;
 }
+@supports (height: 1dvh) {
+  #view-home .cf {
+    --cf-h: clamp(330px, 52dvh, 390px);
+  }
+}
+
+/* Palco: perspectiva 3D + fade nas bordas */
 #view-home .home-grid.mp-hub {
   display: block;
   position: relative;
-  height: clamp(330px, 52vh, 390px);
+  height: var(--cf-h);
   margin: 8px 0 0;
+  gap: 0;
   perspective: 1200px;
   overflow: hidden;
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
 }
 #view-home .home-grid.dragging {
   cursor: grabbing;
 }
+
+/* Card */
 #view-home .cf-card {
   --ac: #fb3333;
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(300px, 66vw);
+  width: var(--cf-card-w);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -3251,16 +3258,23 @@ body:not([data-sys]) .tab[data-view="multi"] {
   border: 1px solid #ffffff14;
   border-radius: 26px;
   color: inherit;
+  font: inherit;
   outline: 0;
   overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   will-change: transform, opacity;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-drag: none;
   transition:
-    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s var(--cf-ease),
     opacity 0.4s ease,
     border-color 0.35s,
     box-shadow 0.45s;
 }
+/* faixa colorida do topo */
 #view-home .cf-card::before {
   content: "";
   position: absolute;
@@ -3269,22 +3283,58 @@ body:not([data-sys]) .tab[data-view="multi"] {
   background: var(--ac);
   opacity: 0.35;
   transition: opacity 0.35s;
+  z-index: 2;
+}
+/* brilho suave na cor do console (só no card ativo) */
+#view-home .cf-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(120% 70% at 50% 0%, var(--ac) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+#view-home .cf-card > * {
+  position: relative;
+  z-index: 1;
 }
 #view-home .home-grid.dragging .cf-card {
   transition:
     border-color 0.35s,
     box-shadow 0.45s;
 }
+
+/* Estado ativo */
 #view-home .cf-card.active {
-  border-color: color-mix(in srgb, var(--ac) 55%, transparent);
+  border-color: rgba(251, 51, 51, 0.55);
   box-shadow:
     0 22px 48px #000000b3,
-    0 0 0 1px color-mix(in srgb, var(--ac) 25%, transparent);
-  cursor: pointer;
+    0 0 0 1px rgba(251, 51, 51, 0.25);
 }
 #view-home .cf-card.active::before {
   opacity: 1;
 }
+#view-home .cf-card.active::after {
+  opacity: 0.16;
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+  #view-home .cf-card.active {
+    border-color: color-mix(in srgb, var(--ac) 55%, transparent);
+    box-shadow:
+      0 22px 48px #000000b3,
+      0 0 0 1px color-mix(in srgb, var(--ac) 25%, transparent);
+  }
+}
+
+/* Acessibilidade: foco por teclado */
+#view-home .cf-card:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: -5px;
+}
+
+/* Ícone */
 #view-home .cf-ico {
   width: 84px;
   height: 84px;
@@ -3294,25 +3344,54 @@ body:not([data-sys]) .tab[data-view="multi"] {
   border-radius: 50%;
   font-size: 2.1rem;
   color: var(--ac);
-  background: color-mix(in srgb, var(--ac) 14%, #101010);
-  border: 1px solid color-mix(in srgb, var(--ac) 30%, transparent);
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  background: #1a1010;
+  border: 1px solid rgba(251, 51, 51, 0.3);
+  transition:
+    transform 0.5s var(--cf-ease),
+    filter 0.4s;
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+  #view-home .cf-ico {
+    background: color-mix(in srgb, var(--ac) 14%, #101010);
+    border-color: color-mix(in srgb, var(--ac) 30%, transparent);
+  }
+}
+#view-home .cf-card:not(.active) .cf-ico {
+  filter: grayscale(0.45);
 }
 #view-home .cf-card.active .cf-ico {
   transform: scale(1.1);
 }
+#view-home .cf-ico img,
+#view-home .cf-ico svg {
+  max-width: 60%;
+  max-height: 60%;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* Textos */
 #view-home .cf-card h3 {
-  margin: 18px 0 4px;
+  max-width: 100%;
+  margin: 18px 0 8px;
   font-size: 1.35rem;
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #view-home .cf-card p {
+  max-width: 100%;
   margin: 0;
   padding: 4px 12px;
   border-radius: 999px;
   background: #ffffff0d;
   color: #b4b4b4;
   font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #view-home .cf-card .on {
   display: flex;
@@ -3329,6 +3408,8 @@ body:not([data-sys]) .tab[data-view="multi"] {
 #view-home .cf-card .on b {
   color: #fff;
 }
+
+/* Botão "Jogar / Entrar" */
 #view-home .cf-go {
   margin-top: 18px;
   padding: 11px 30px;
@@ -3339,20 +3420,29 @@ body:not([data-sys]) .tab[data-view="multi"] {
   font-weight: 700;
   opacity: 0;
   transform: translateY(8px);
+  pointer-events: none;
   transition:
     opacity 0.35s ease,
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transform 0.5s var(--cf-ease),
+    filter 0.2s;
 }
 #view-home .cf-card.active .cf-go {
   opacity: 1;
   transform: none;
+  pointer-events: auto;
 }
 #view-home .cf-card.active:hover .cf-go {
   filter: brightness(1.12);
 }
+#view-home .cf-card.active:active .cf-go {
+  transform: scale(0.96);
+}
+
+/* Setas (agora realmente centralizadas na vertical) */
 #view-home .cf-arrow {
   position: absolute;
-  top: calc(clamp(330px, 52vh, 390px) / 2 - 6px);
+  top: calc(8px + var(--cf-h) / 2);
+  translate: 0 -50%;
   z-index: 20;
   width: 46px;
   height: 46px;
@@ -3367,15 +3457,19 @@ body:not([data-sys]) .tab[data-view="multi"] {
   transition:
     opacity 0.2s,
     border-color 0.2s,
-    transform 0.2s;
+    transform 0.2s var(--spring);
 }
 #view-home .cf-arrow:hover:not(:disabled) {
   border-color: #fb333399;
-  transform: scale(1.06);
+  transform: scale(1.08);
+}
+#view-home .cf-arrow:active:not(:disabled) {
+  transform: scale(0.94);
 }
 #view-home .cf-arrow:disabled {
   opacity: 0.2;
   cursor: default;
+  pointer-events: none;
 }
 #view-home .cf-prev {
   left: 0;
@@ -3383,13 +3477,17 @@ body:not([data-sys]) .tab[data-view="multi"] {
 #view-home .cf-next {
   right: 0;
 }
+
+/* Pontinhos (com área de toque maior) */
 #view-home .cf-dots {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 8px;
   margin-top: 16px;
 }
 #view-home .cf-dot {
+  position: relative;
   width: 8px;
   height: 8px;
   padding: 0;
@@ -3397,26 +3495,75 @@ body:not([data-sys]) .tab[data-view="multi"] {
   border-radius: 8px;
   background: #ffffff33;
   cursor: pointer;
+  overflow: visible;
   transition:
-    width 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.3s var(--cf-ease),
     background 0.3s;
+}
+#view-home .cf-dot::after {
+  content: "";
+  position: absolute;
+  inset: -12px -5px;
+}
+#view-home .cf-dot:hover {
+  background: #ffffff66;
 }
 #view-home .cf-dot.active {
   width: 26px;
-  background: #fb3333;
+  background: var(--red);
 }
+
+/* Dica */
 #view-home .cf-hint {
   margin-top: 12px;
+  min-height: 1.2em;
   text-align: center;
   font-size: 0.78rem;
   color: #8a8a8a;
 }
+
+/* Celular: sem setas, só arrastar */
 @media (hover: none), (max-width: 700px) {
   #view-home .cf-arrow {
     display: none;
   }
 }
+
+/* Celular deitado: carrossel mais compacto */
+@media (orientation: landscape) and (max-height: 480px) {
+  #view-home .cf {
+    --cf-h: 270px;
+    --cf-card-w: min(250px, 50vw);
+  }
+  #view-home .cf-card {
+    padding: 20px 16px 16px;
+    border-radius: 22px;
+  }
+  #view-home .cf-ico {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+  #view-home .cf-card h3 {
+    margin: 12px 0 6px;
+    font-size: 1.15rem;
+  }
+  #view-home .cf-go {
+    margin-top: 12px;
+    padding: 9px 24px;
+  }
+}
+
+/* Reduzir animações (opção do app ou do sistema) */
 body.reduce-anim #view-home .cf-card,
 body.reduce-anim #view-home .cf-card * {
   transition-duration: 0.01ms !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  #view-home .cf-card,
+  #view-home .cf-card *,
+  #view-home .cf-dot,
+  #view-home .cf-arrow {
+    transition-duration: 0.01ms !important;
+  }
 }
