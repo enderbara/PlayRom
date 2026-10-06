@@ -235,13 +235,6 @@ const CONSOLES = {
     btns: ["UP", "DOWN", "LEFT", "RIGHT", "A", "B", "X", "Y", "L", "R", "L2", "R2", "START", "SELECT"],
     lbl: { A: "Botão ○ (A)", B: "Botão ✕ (B)", X: "Botão △ (X)", Y: "Botão □ (Y)", L: "Botão L1", R: "Botão R1", L2: "Botão L2", R2: "Botão R2", START: "Start", SELECT: "Select" },
   },
-  psp: {
-    name: "PSP", short: "PSP", core: "psp", icon: "fa-gamepad", lvl: 3,
-    folders: ["psp", "playstationportable", "sonypsp"],
-    exts: /\.(iso|cso|pbp)$/i, extTxt: ".iso .cso .pbp",
-    btns: ["UP", "DOWN", "LEFT", "RIGHT", "A", "B", "X", "Y", "L", "R", "START", "SELECT"],
-    lbl: { A: "Botão ○ (A)", B: "Botão ✕ (B)", X: "Botão △ (X)", Y: "Botão □ (Y)", L: "Botão L", R: "Botão R", START: "Start", SELECT: "Select" },
-  },
   md: {
     name: "Mega Drive", short: "MD", core: "segaMD", icon: "fa-gamepad", lvl: 2,
     folders: ["megadrive", "megadriver", "genesis", "segagenesis", "segamegadrive", "md"],
@@ -258,8 +251,8 @@ const CONSOLES = {
   },
 };
 
-/* grupos da tela de consoles: "Play" abre um segundo carrossel com PS1 e PSP */
-const HOME_GROUPS = { play: { name: "Play", icon: "fa-compact-disc", kids: ["ps1", "psp"] } };
+/* grupos da tela de consoles (vazio: PS1, Mega Drive e Atari ficam direto no carrossel) */
+const HOME_GROUPS = {};
 let homeSub = null; /* null = carrossel principal · "play" = dentro do grupo Play */
 const groupOf = (k) => Object.keys(HOME_GROUPS).find((g) => HOME_GROUPS[g].kids.includes(k)) || null,
   kidsOf = (k) => (HOME_GROUPS[k] ? HOME_GROUPS[k].kids : [k]);
@@ -271,6 +264,7 @@ const con = () => CONSOLES[SYS] || CONSOLES.ps1,
   KLBL = () => Object.assign({ UP: "Cima", DOWN: "Baixo", LEFT: "Esquerda", RIGHT: "Direita" }, con().lbl),
   libSys = () => library.filter((x) => (x.sys || "ps1") === SYS),
   normFolder = (s) => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, ""),
+  isIgn = (n) => ["psp", "playstationportable", "sonypsp"].includes(normFolder(n)),
   sysOfFolder = (n) => {
     const m = normFolder(n);
     return Object.keys(CONSOLES).find((k) => CONSOLES[k].folders.includes(m)) || null;
@@ -329,7 +323,7 @@ function renderHome(startIdx) {
   const box = cf.parentElement;
   box.querySelectorAll(".cf-back").forEach((x) => x.remove());
 
-  const ROOT = ["play", "md", "atari"],
+  const ROOT = ["ps1", "md", "atari"],
     keys = homeSub ? HOME_GROUPS[homeSub].kids : ROOT;
 
   /* título e subtítulo mudam dentro do grupo */
@@ -875,7 +869,7 @@ $("#folder-input").onchange = (e) => {
     const p = (f.webkitRelativePath || "").split("/");
     if (p.length < 3) return;
     const nm = p[1];
-    if (nm.startsWith(".")) return;
+    if (nm.startsWith(".") || isIgn(nm)) return;
     const s = sysOfFolder(nm);
     if (s && (!fo[s] || fo[s] === nm)) {
       fo[s] = nm;
@@ -899,7 +893,7 @@ async function importFiles(e, t, found, extra) {
   if (miss.length) parts.push("Faltando: " + miss.map((k) => CONSOLES[k].short).join(", ") + ".");
   if (extra.length) parts.push("Pasta(s) não permitida(s): " + extra.join(", ") + ".");
   const msg = parts.length
-    ? "A pasta principal deve ter somente 4 pastas: PS1, PSP, Mega Drive e Atari. " + parts.join(" ")
+    ? "A pasta principal deve ter somente 3 pastas: PS1, Mega Drive e Atari. " + parts.join(" ")
     : !n.length && !window.__plPend
       ? "Nenhuma ROM compatível foi encontrada nas pastas dos consoles."
       : "";
@@ -983,7 +977,7 @@ async function scanRoot(root) {
     extra = [];
   for await (const [nm, h] of root.entries())
     if (h.kind === "directory") {
-      if (nm.startsWith(".")) continue;
+      if (nm.startsWith(".") || isIgn(nm)) continue;
       const s = sysOfFolder(nm);
       if (s && !found[s]) {
         found[s] = 1;
@@ -1017,10 +1011,10 @@ async function pickFolder() {
     (!e || e.name !== "AbortError") && showBanner("N\xE3o foi poss\xEDvel abrir a pasta.");
   }
 }
-/* gera um .zip só com as 4 pastas vazias */
+/* gera um .zip só com as 3 pastas vazias */
 function downloadStructure() {
   const root = "PlayRom-Jogos",
-    names = ["PS1", "PSP", "Mega Drive", "Atari"],
+    names = ["PS1", "Mega Drive", "Atari"],
     enc = new TextEncoder(),
     paths = [root + "/", ...names.map((n) => root + "/" + n + "/")],
     d = new Date(),
@@ -1301,8 +1295,7 @@ let rafId = 1e9;
   rawRAF(f);
 })();
 ((window.requestAnimationFrame = (e) => {
-  /* o PSP não passa pelo limitador de FPS (SYS === "psp") */
-  if (!playerEl.classList.contains("show") || !fpsCap || SYS === "psp" || hz <= fpsCap * 1.12)
+  if (!playerEl.classList.contains("show") || !fpsCap || hz <= fpsCap * 1.12)
     return rawRAF((n) => {
       (frames++, e(n));
     });
@@ -1792,44 +1785,15 @@ function ldFinish() {
 }
 const EJS_VER = "4.2.3",
   EJS_PATH = "https://cdn.emulatorjs.org/" + EJS_VER + "/data/";
-/* Opções do núcleo PPSSPP otimizadas para rodar em WebAssembly (sem JIT nativo).
-   Opções desconhecidas pelo núcleo são ignoradas. */
-const PSP_OPTS = {
-    ppsspp_internal_resolution: "480x272",
-    ppsspp_cpu_core: "IR JIT",
-    ppsspp_fast_memory: "disabled",
-    ppsspp_software_rendering: "disabled",
-    ppsspp_gpu_hardware_transform: "enabled",
-    ppsspp_auto_frameskip: "enabled",
-    ppsspp_frameskip: "1",
-    ppsspp_frameskip_type: "Number of frames",
-    ppsspp_skip_buffer_effects: "enabled",
-    ppsspp_skip_gpu_readbacks: "enabled",
-    ppsspp_lazy_texture_caching: "enabled",
-    ppsspp_texture_scaling_level: "Off",
-    ppsspp_texture_anisotropic_filtering: "off",
-    ppsspp_texture_filtering: "Auto",
-    ppsspp_spline_quality: "Low",
-    ppsspp_hardware_tesselation: "disabled",
-    ppsspp_lower_resolution_for_effects: "Aggressive",
-    ppsspp_inflight_frames: "Up to 2",
-    ppsspp_io_timing_method: "Fast",
-    ppsspp_vertex_cache: "enabled",
-    ppsspp_software_skinning: "enabled",
-  },
-  /* PS1: pula quadros automaticamente quando o aparelho não aguenta e desliga efeitos de áudio/imagem pesados */
-  PS1_OPTS = {
-    pcsx_rearmed_frameskip_type: "auto",
-    pcsx_rearmed_drc: "enabled",
-    pcsx_rearmed_spu_reverb: "disabled",
-    pcsx_rearmed_spu_interpolation: "off",
-    pcsx_rearmed_neon_enhancement_enable: "disabled",
-    pcsx_rearmed_neon_interlace_enable: "disabled",
-  },
-  pspOpts = () =>
-    isMobDev()
-      ? Object.assign({}, PSP_OPTS, { ppsspp_frameskip: "2", ppsspp_texture_filtering: "Nearest" })
-      : PSP_OPTS;
+/* PS1: pula quadros automaticamente quando o aparelho não aguenta e desliga efeitos de áudio/imagem pesados */
+const PS1_OPTS = {
+  pcsx_rearmed_frameskip_type: "auto",
+  pcsx_rearmed_drc: "enabled",
+  pcsx_rearmed_spu_reverb: "disabled",
+  pcsx_rearmed_spu_interpolation: "off",
+  pcsx_rearmed_neon_enhancement_enable: "disabled",
+  pcsx_rearmed_neon_interlace_enable: "disabled",
+};
 let scriptEl = null,
   romUrl = null,
   startTimer = null,
@@ -1990,7 +1954,7 @@ function playGame(e) {
     tipUpdate(),
     (muted = !1),
     ($("#p-mute").innerHTML = '<i class="fa-solid fa-volume-high"></i>'),
-    $("#ejs-box").style.setProperty("--orig", SYS === "psp" ? "1.7647" : "1.3333"),
+    $("#ejs-box").style.setProperty("--orig", "1.3333"),
     autoOptStart(t.name),
     applyConsoleUI(),
     applyAll(S));
@@ -2001,12 +1965,6 @@ function playGame(e) {
   let n = null;
   const o = async () => {
       if (!current || current !== t) return;
-      if (SYS === "psp" && !window.crossOriginIsolated) {
-        failRom(
-          "O PSP precisa que o site seja servido com os cabeçalhos Cross-Origin-Opener-Policy: same-origin e Cross-Origin-Embedder-Policy: credentialless.",
-        );
-        return;
-      }
       let f;
       let biosPick = "";
       try {
@@ -2024,7 +1982,7 @@ function playGame(e) {
       n = romUrl = URL.createObjectURL(f);
       ((window.EJS_player = "#ejs-host"),
         (window.EJS_core = coreOf(t.name)),
-        (window.EJS_threads = SYS === "psp"),
+        (window.EJS_threads = !1),
         (window.EJS_gameName = t.name),
         (window.EJS_gameUrl = romUrl),
         (window.EJS_pathtodata = EJS_PATH),
@@ -2033,7 +1991,7 @@ function playGame(e) {
         (window.EJS_startOnLoaded = !0),
         (window.EJS_CacheLimit = 1),
         (window.EJS_disableLocalStorage = !0),
-        (window.EJS_defaultOptions = SYS === "ps1" ? PS1_OPTS : SYS === "psp" ? pspOpts() : {}),
+        (window.EJS_defaultOptions = SYS === "ps1" ? PS1_OPTS : {}),
         (window.EJS_biosUrl = biosPick || ""),
         (window.EJS_Buttons = {
           playPause: !1,
@@ -3137,12 +3095,11 @@ async function svPick(e) {
   }));
 /* ===== Tela "Nova update!" =====
    A cada atualização do site: mude APP_VER e a lista APP_NOTES. */
-const APP_VER = "1.1.0",
+const APP_VER = "1.2.0",
   APP_NOTES = [
-    "Otimizador automático agora funciona em PS1, PSP e Mega Drive.",
-    "Modo leve automático no celular: menos efeitos pesados durante o jogo.",
-    "Ajustes do PSP e do PS1 para render mais FPS.",
-    "Reage mais rápido quando o jogo fica muito lento.",
+    "O PSP foi removido: agora o PlayRom.io tem PS1, Mega Drive e Atari.",
+    "A pasta principal agora tem só 3 pastas: PS1, Mega Drive e Atari (uma pasta PSP antiga é ignorada).",
+    "Otimizador automático em PS1 e Mega Drive, com modo leve automático no celular.",
   ];
 function updCheck() {
   const old = cfg.get("ver", null);
