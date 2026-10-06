@@ -4,11 +4,11 @@
     SRC = "https://bauval.org/22/" + KEY,
     W = 300,
     H = 250,
-    WAIT = 8000, /* tempo para o anúncio aparecer antes de considerar falha */
-    RETRY = 30000, /* espera antes de tentar de novo */
-    MAXTRY = 5;
+    WAIT = 10000, /* tempo máximo para o anúncio aparecer em cada tentativa */
+    RETRY = 30000, /* espera antes de uma nova rodada se as duas tentativas falharem */
+    ROUNDS = 4;
 
-  /* Só 2 lugares: no fim da lista de jogos (dentro de um console) e no fim das Configurações.
+  /* Só 2 lugares: fim da lista de jogos (dentro de um console) e fim das Configurações.
      Nunca no jogo, na tela de carregamento, nos Termos, no setup, nos Consoles nem no Multiplayer. */
   var PLACES = [
     ["#view-library .container", "ad-lib"],
@@ -23,75 +23,106 @@
       return false;
     }
   }
-  var booting = function () {
-    return document.body.classList.contains("booting");
+  var cls = function (c) {
+    return document.body.classList.contains(c);
   };
-  var playing = function () {
-    return document.body.classList.contains("playing");
-  };
-
-  /* o anúncio só conta como "carregado" quando o Adsterra colocou algo dentro da caixa */
-  function rendered(box) {
-    return [].some.call(box.children, function (c) {
-      return c.tagName !== "SCRIPT";
-    });
-  }
   var boxOf = function (s) {
     return s.querySelector(".ad-box");
   };
 
-  function make(parent, cls, id) {
+  function make(parent, id) {
     var s = document.createElement("div");
-    s.className = cls;
-    if (id) s.id = id;
+    s.className = "ad-slot";
+    s.id = id;
     s.innerHTML = '<span class="ad-label">Publicidade</span><div class="ad-box"></div>';
     parent.appendChild(s);
-    /* quando o anúncio aparece, mostra o espaço (nunca mostra quadrado vazio) */
-    new MutationObserver(function () {
-      if (!rendered(boxOf(s))) return;
-      clearTimeout(s._t);
-      s._busy = false;
-      s.classList.add("on");
-    }).observe(boxOf(s), { childList: true });
     return s;
   }
 
-  function reset(s) {
-    clearTimeout(s._t);
-    boxOf(s).textContent = "";
-    s.classList.remove("on");
-    s._busy = false;
+  /* espera até o teste ficar verdadeiro (ou acabar o tempo) */
+  function until(test, done) {
+    var t0 = Date.now(),
+      iv = setInterval(function () {
+        var ok = false;
+        try {
+          ok = test();
+        } catch (e) {}
+        if (ok || Date.now() - t0 > WAIT) {
+          clearInterval(iv);
+          done(ok);
+        }
+      }, 250);
   }
 
-  function fail(s, why) {
-    console.warn("[ads] " + why);
-    reset(s);
-    s._next = Date.now() + RETRY;
+  /* Tentativa 1: o código do Adsterra dentro de um iframe próprio (o jeito que ele espera: document.write funciona e
+     cada anúncio tem seu próprio atOptions). Como o iframe é do mesmo site, dá para conferir se o anúncio chegou. */
+  function viaFrame(s, done) {
+    var box = boxOf(s),
+      f = document.createElement("iframe");
+    f.width = W;
+    f.height = H;
+    f.title = "Publicidade";
+    f.setAttribute("scrolling", "no");
+    f.setAttribute("frameborder", "0");
+    f.srcdoc =
+      '<!doctype html><html><body style="margin:0;background:transparent">' +
+      "<script>atOptions={'key':'" + KEY + "','format':'iframe','height':" + H + ",'width':" + W + ",'params':{}};<\/script>" +
+      '<script src="' + SRC + '"><\/script></body></html>';
+    box.appendChild(f);
+    until(
+      function () {
+        return !!f.contentDocument.querySelector("iframe,ins,img,a");
+      },
+      function (ok) {
+        if (!ok) f.remove();
+        done(ok);
+      },
+    );
   }
 
-  /* carrega o anúncio (o Adsterra lê o atOptions global quando o script executa) */
-  function load(s) {
-    var box = boxOf(s);
-    if (s._busy || box.firstChild) return;
-    if ((s._tries || 0) >= MAXTRY || Date.now() < (s._next || 0)) return;
-    s._tries = (s._tries || 0) + 1;
-    s._busy = true;
+  /* Tentativa 2: script direto na caixa (o Adsterra lê o atOptions global) */
+  function viaScript(s, done) {
+    var box = boxOf(s),
+      sc = document.createElement("script");
     window.atOptions = { key: KEY, format: "iframe", height: H, width: W, params: {} };
-    var sc = document.createElement("script");
     sc.async = true;
     sc.src = SRC;
-    sc.onerror = function () {
-      fail(s, "script bloqueado ou indisponível: " + SRC);
-    };
     box.appendChild(sc);
-    s._t = setTimeout(function () {
-      rendered(box) || fail(s, "o anúncio não apareceu em " + WAIT / 1000 + "s");
-    }, WAIT);
+    until(
+      function () {
+        return [].some.call(box.children, function (c) {
+          return c.tagName !== "SCRIPT";
+        });
+      },
+      function (ok) {
+        if (!ok) box.textContent = "";
+        done(ok);
+      },
+    );
   }
 
-  /* banners do fim das telas: carrega o da tela que está aberta */
+  /* Depois que o anúncio aparece, ele NUNCA mais é removido nem recarregado. */
+  function load(s) {
+    if (s._shown || s._busy || (s._rounds || 0) >= ROUNDS || Date.now() < (s._next || 0)) return;
+    s._busy = true;
+    s._rounds = (s._rounds || 0) + 1;
+    var end = function (ok) {
+      s._busy = false;
+      if (ok) {
+        s._shown = true;
+        s.classList.add("on");
+      } else {
+        console.warn("[ads] não apareceu (rodada " + s._rounds + "). Bloqueador de anúncios ou rede?");
+        s._next = Date.now() + RETRY;
+      }
+    };
+    viaFrame(s, function (ok) {
+      ok ? end(true) : viaScript(s, end);
+    });
+  }
+
   function check() {
-    if (booting() || playing() || !tosOk()) return;
+    if (cls("booting") || cls("playing") || !tosOk()) return;
     slots.forEach(function (s) {
       s.parentElement && s.parentElement.closest(".view.show") && load(s);
     });
@@ -100,27 +131,14 @@
   function init() {
     PLACES.forEach(function (p) {
       var c = document.querySelector(p[0]);
-      if (c && !document.getElementById(p[1])) slots.push(make(c, "ad-slot", p[1]));
+      if (c && !document.getElementById(p[1])) slots.push(make(c, p[1]));
     });
-
-    var mo = new MutationObserver(function () {
-        var pn = playing();
-        if (pn) {
-          /* entrou no jogo: remove os anúncios (libera CPU para o emulador) */
-          slots.forEach(function (s) {
-            s._tries = 0;
-            reset(s);
-          });
-        }
-        check();
-      });
+    var mo = new MutationObserver(check);
     mo.observe(document.body, { attributes: true, attributeFilter: ["class"] });
     document.querySelectorAll(".view").forEach(function (v) {
       mo.observe(v, { attributes: true, attributeFilter: ["class"] });
     });
-
-    /* garantia: confere de novo a cada 500ms (ex.: logo depois de aceitar os Termos) */
-    setInterval(check, 500);
+    setInterval(check, 500); /* garantia (ex.: logo depois de aceitar os Termos) */
     check();
   }
 
