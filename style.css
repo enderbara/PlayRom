@@ -3644,31 +3644,36 @@ body.reduce-anim #view-home .cf-card * {
 }
 
 /* =====================================================
-   ETAPA DA PASTA: botões organizados
+   ETAPA DA PASTA: ações em uma linha
+   [baixar estrutura] [ Selecionar Pasta ] [multiplayer]
+   Os dois botões laterais mostram só o ícone.
    ===================================================== */
 #st2 .warn-box {
   margin-bottom: 24px;
 }
-/* 1) Baixar estrutura (secundário) */
-#st2 #btn-zip {
-  margin: 0 0 26px !important;
+#st2 .st2-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
 }
-/* 2) Selecionar pasta (principal) */
-#st2 #btn-pick {
-  margin: 0 0 14px !important;
+#st2 .st2-actions .btn {
+  min-height: 50px;
 }
-/* 3) Multiplayer: ação discreta, separada das outras */
-#st2 #btn-mponly {
-  margin: 0 !important;
-  background: transparent;
-  border-color: transparent;
-  color: var(--muted);
-  font-weight: 500;
-  font-size: 0.85rem;
+#st2 .st2-actions #btn-pick {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
 }
-#st2 #btn-mponly:hover {
-  background: #ffffff0d;
-  color: #fff;
+#st2 .st2-actions .ico-only {
+  flex: 0 0 50px;
+  width: 50px;
+  padding: 0;
+}
+#st2 .st2-actions .ico-only span {
+  display: none;
+}
+#st2 .st2-actions .ico-only i {
+  font-size: 1.05rem;
 }
 #st2 .dots {
   margin-top: 26px;
