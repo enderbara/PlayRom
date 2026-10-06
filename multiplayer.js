@@ -44,6 +44,8 @@ const MP_ACT = [
   ["START", "Start"],
   ["SELECT", "Select"],
 ];
+/* consoles aceitos nas salas e na contagem de pessoas online */
+const MP_SYS = ["ps1", "psp", "md", "atari"];
 const mpUiOpen = () =>
   !mplEl.classList.contains("hidden") ||
   !mpcEl.classList.contains("hidden") ||
@@ -160,7 +162,8 @@ function mpMq(brokers, ms) {
     };
     const emitOnline = () => {
       const now = Date.now(),
-        c = { ps1: 0, md: 0, atari: 0 };
+        c = {};
+      MP_SYS.forEach((k) => (c[k] = 0));
       pres.forEach((v, k) => {
         if (now - v.t > 10000) pres.delete(k);
         else if (c[v.sys] !== undefined) c[v.sys]++;
@@ -297,7 +300,7 @@ function mpMq(brokers, ms) {
             emitRooms();
             break;
           case "pres":
-            mySys = ["ps1", "md", "atari"].includes(m.sys) ? m.sys : "";
+            mySys = MP_SYS.includes(m.sys) ? m.sys : "";
             presOn = true;
             presOut();
             emitOnline();
@@ -322,7 +325,7 @@ function mpMq(brokers, ms) {
               emit({ t: "err", m: "A sala aceita 2 jogadores." });
               break;
             }
-            myRoom = { id: me, name, game, max, locked: false, sys: ["ps1", "md", "atari"].includes(m.sys) ? m.sys : "ps1", members: [{ id: me, slot: 0 }] };
+            myRoom = { id: me, name, game, max, locked: false, sys: MP_SYS.includes(m.sys) ? m.sys : "ps1", members: [{ id: me, slot: 0 }] };
             emit({ t: "created", room: pubRoom(myRoom) });
             announce();
             clearInterval(annT);
@@ -1386,7 +1389,7 @@ function mpGuestPrep() {
   a.classList.remove("leaving");
   a.classList.add("show");
   document.body.classList.add("playing", "mpg");
-  $("#ejs-box").style.setProperty("--orig", "1.3333");
+  $("#ejs-box").style.setProperty("--orig", (mp.room.sys || SYS) === "psp" ? "1.7647" : "1.3333");
   applyAll(S);
 }
 function mpGuestStart() {
