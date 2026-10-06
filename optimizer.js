@@ -12,8 +12,8 @@
  *
  * O nível usado é o MAIOR entre o mínimo manual (S.optMin) e o nível automático.
  * Vigia o FPS: se o jogo ficar lento, sobe de nível (2 níveis de uma vez se estiver MUITO lento,
- * ex.: PSP a 2 FPS), avisa na tela e guarda o nível por jogo para abrir já otimizado da próxima vez.
- * Funciona em PS1, PSP e Mega Drive (Atari 2600 só usa o nível 1, pois é muito leve).
+ * ex.: 2 FPS), avisa na tela e guarda o nível por jogo para abrir já otimizado da próxima vez.
+ * Funciona em PS1 e Mega Drive (Atari 2600 só usa o nível 1, pois é muito leve).
  */
 
 const AutoOpt = {
@@ -54,28 +54,6 @@ const AUTO_OPT_CORE = {
     },
     4: { pcsx_rearmed_frameskip_interval: "2" },
   },
-  psp: {
-    1: {
-      ppsspp_lazy_texture_caching: "enabled",
-      ppsspp_skip_gpu_readbacks: "enabled",
-      ppsspp_texture_scaling_level: "Off",
-      ppsspp_texture_anisotropic_filtering: "off",
-    },
-    2: {
-      ppsspp_auto_frameskip: "enabled",
-      ppsspp_frameskip_type: "Number of frames",
-      ppsspp_frameskip: "1",
-      ppsspp_skip_buffer_effects: "enabled",
-    },
-    3: {
-      ppsspp_frameskip: "2",
-      ppsspp_texture_filtering: "Nearest",
-      ppsspp_lower_resolution_for_effects: "Aggressive",
-      ppsspp_spline_quality: "Low",
-      ppsspp_hardware_tesselation: "disabled",
-    },
-    4: { ppsspp_frameskip: "3", ppsspp_inflight_frames: "Up to 2" },
-  },
   md: {
     2: {
       genesis_plus_gx_audio_filter: "disabled",
@@ -87,10 +65,10 @@ const AUTO_OPT_CORE = {
 };
 
 /* Consoles em que o otimizador atua. */
-const AUTO_OPT_SYS = ["ps1", "psp", "md", "atari"];
+const AUTO_OPT_SYS = ["ps1", "md", "atari"];
 
 /* Nível máximo útil por console (o Atari não precisa de mais que o nível 1). */
-const AUTO_OPT_CAP = { ps1: 4, psp: 4, md: 3, atari: 1 };
+const AUTO_OPT_CAP = { ps1: 4, md: 3, atari: 1 };
 
 const AUTO_OPT_MESSAGES = {
   1: "Jogo travando: desliguei os efeitos visuais (otimização leve).",
@@ -146,7 +124,7 @@ function autoOptStart(gameName) {
 
   const saved = autoOptSavedLevels()[AutoOpt.game];
   if (saved) AutoOpt.level = Math.min(autoOptCap(), saved);
-  else if (autoOptWeakDevice()) AutoOpt.level = SYS === "psp" ? 2 : SYS === "ps1" ? 1 : 0;
+  else if (autoOptWeakDevice()) AutoOpt.level = SYS === "ps1" ? 1 : 0;
 }
 
 /* Chamado quando o jogo sai: limpa o estado. */
@@ -248,9 +226,7 @@ function autoOptTick(fps) {
   } else if (!AutoOpt.warnedMax) {
     AutoOpt.warnedMax = true;
     toast(
-      SYS === "psp"
-        ? "Já estou no modo mais leve. O PSP é muito pesado no navegador: em celular fraco ele pode não chegar a 30 FPS."
-        : SYS === "ps1"
+      SYS === "ps1"
           ? "Já estou no modo mais leve. Se continuar lento, tente selecionar uma BIOS."
           : "Já estou no modo mais leve. Feche outras abas e apps.",
       5500,
