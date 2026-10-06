@@ -8,23 +8,10 @@
     />
     <meta name="theme-color" content="#080808" />
     <title>PlayRom.io</title>
-    <script>
-      (function () {
-        if (window.crossOriginIsolated) return;
-        if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
-        var k = "playrom-coi-reload";
-        if (!navigator.serviceWorker.controller) {
-          navigator.serviceWorker.addEventListener("controllerchange", function () {
-            try {
-              if (sessionStorage.getItem(k)) return;
-              sessionStorage.setItem(k, "1");
-            } catch (e) {}
-            location.reload();
-          });
-        }
-        navigator.serviceWorker.register("sw.js").catch(function () {});
-      })();
-    </script>
+    
+    <!-- Script que resolve o erro do PSP (injetando os cabeçalhos COOP/COEP) -->
+    <script src="https://unpkg.com/coi-serviceworker@0.1.7/coi-serviceworker.js"></script>
+
     <link rel="icon" href="logo.png" />
     <link rel="preconnect" href="https://cdn.emulatorjs.org" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.emulatorjs.org" />
@@ -34,10 +21,11 @@
       href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- Links de estilos externos carregando com política flexível -->
-    <link
-      rel="stylesheet"
-      href="https://cloudflare.com"
+    
+    <!-- Ícones corrigidos -->
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
     />
     <link rel="stylesheet" href="style.css" />
   </head>
