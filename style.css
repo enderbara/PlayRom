@@ -3743,36 +3743,10 @@ body.playing .ad-slot {
   display: flex;
 }
 
-/* anúncio na tela de carregamento (some quando o jogo termina de carregar) */
-.ad-load {
+/* botão Cancelar da tela de carregamento (canto superior esquerdo) */
+.ld-cancel {
   position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(10px, env(safe-area-inset-left));
   z-index: 3;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.ad-load.on {
-  display: flex;
-  animation: fadeUp 0.5s var(--ease) both;
-}
-.p-loading.adon .ad-load {
-  left: 50%;
-  bottom: calc(12px + env(safe-area-inset-bottom));
-  translate: -50% 0;
-}
-.p-loading.adside .ad-load {
-  right: max(14px, env(safe-area-inset-right));
-  top: 50%;
-  translate: 0 -50%;
-}
-.p-loading.adside .ld {
-  translate: -22vw 0;
-}
-.p-loading.adon .ld-tip,
-.p-loading.adside .ld-tip {
-  display: none;
-}
-.p-loading.adon.tip .ld {
-  translate: none;
 }
