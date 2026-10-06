@@ -1301,7 +1301,8 @@ let rafId = 1e9;
   rawRAF(f);
 })();
 ((window.requestAnimationFrame = (e) => {
-  if (!playerEl.classList.contains("show") || !fpsCap || hz <= fpsCap * 1.12)
+  /* CORRIGIDO: o PSP não passa pelo limitador de FPS (SYS === "psp") */
+  if (!playerEl.classList.contains("show") || !fpsCap || SYS === "psp" || hz <= fpsCap * 1.12)
     return rawRAF((n) => {
       (frames++, e(n));
     });
@@ -1787,15 +1788,28 @@ function ldFinish() {
 }
 const EJS_VER = "4.2.3",
   EJS_PATH = "https://cdn.emulatorjs.org/" + EJS_VER + "/data/";
-/* Opções do núcleo PPSSPP: só aceleram, sem baixar a qualidade da imagem
-   (a resolução continua a nativa do PSP, 480x272) */
+/* Opções do núcleo PPSSPP otimizadas para rodar em WebAssembly (sem JIT nativo).
+   CORRIGIDO: antes só tinha 6 opções leves; agora força o modo de CPU mais rápido
+   e reduz o peso da GPU. Opções desconhecidas pelo núcleo são ignoradas. */
 const PSP_OPTS = {
   ppsspp_internal_resolution: "480x272",
+  ppsspp_cpu_core: "IR JIT",
+  ppsspp_fast_memory: "disabled",
   ppsspp_auto_frameskip: "enabled",
-  ppsspp_fast_memory: "enabled",
+  ppsspp_frameskip: "1",
+  ppsspp_frameskip_type: "Number of frames",
+  ppsspp_skip_buffer_effects: "enabled",
   ppsspp_lazy_texture_caching: "enabled",
+  ppsspp_texture_scaling_level: "Off",
+  ppsspp_texture_anisotropic_filtering: "off",
+  ppsspp_texture_filtering: "Auto",
+  ppsspp_spline_quality: "Low",
+  ppsspp_hardware_tesselation: "disabled",
+  ppsspp_lower_resolution_for_effects: "Aggressive",
   ppsspp_inflight_frames: "Up to 2",
   ppsspp_io_timing_method: "Fast",
+  ppsspp_vertex_cache: "enabled",
+  ppsspp_software_skinning: "enabled",
 };
 let scriptEl = null,
   romUrl = null,
