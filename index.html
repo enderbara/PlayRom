@@ -1450,37 +1450,6 @@
       <i class="fa-solid fa-mobile-screen-button"></i><span>Gire o celular para jogar</span>
     </div>
     <div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-text"></span></div>
-    
-    <!-- Injeção das configurações do EmulatorJS/PPSSPP -->
-  <!-- Injeção das configurações do EmulatorJS/PPSSPP -->
-    <script>
-      // Forçar a versão 4.0.10 para evitar o travamento em 0%
-      window.EJS_pathtodata = "https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@v4.0.10/data/";
-
-      // Ativando threads e WebGL
-      window.EJS_threads = true;
-      window.EJS_webgl = true;
-
-      // Definindo o bloco de opções do PSP 
-      const PSP_OPTS = {
-        ppsspp_internal_resolution: "480x272",
-        ppsspp_auto_frameskip: "enabled",
-        ppsspp_frameskip_type: "number-of-frames",
-        ppsspp_frameskip: "1",
-        ppsspp_rendering_mode: "non-buffered",
-        ppsspp_fast_memory: "enabled",
-        ppsspp_lazy_texture_caching: "enabled",
-        ppsspp_inflight_frames: "Up to 2",
-        ppsspp_io_timing_method: "Fast",
-      };
-      
-      // Expondo a configuração para o emulador usar
-      window.PSP_OPTS = PSP_OPTS;
-    </script>
-    
-    <!-- Script base do emulador na versão 4.0.10 -->
-    <script src="https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@v4.0.10/data/emulator.js"></script>
-    
     <script src="app.js"></script>
     <script src="optimizer.js"></script>
     <script src="multiplayer.js"></script>
