@@ -3135,6 +3135,69 @@ async function svPick(e) {
   $("#sv").addEventListener("click", (e) => {
     e.target === $("#sv") && closeSv();
   }));
+/* ===== Tela "Nova update!" =====
+   A cada atualização do site: mude APP_VER e a lista APP_NOTES. */
+const APP_VER = "1.1.0",
+  APP_NOTES = [
+    "Otimizador automático agora funciona em PS1, PSP e Mega Drive.",
+    "Modo leve automático no celular: menos efeitos pesados durante o jogo.",
+    "Ajustes do PSP e do PS1 para render mais FPS.",
+    "Reage mais rápido quando o jogo fica muito lento.",
+  ];
+function updCheck() {
+  const old = cfg.get("ver", null);
+  if (old === APP_VER) return Promise.resolve();
+  if (old === null && !cfg.get("setupDone", 0)) {
+    cfg.set("ver", APP_VER);
+    return Promise.resolve();
+  }
+  return new Promise((res) => {
+    const st = document.createElement("style");
+    st.textContent =
+      "#upd{position:fixed;inset:0;z-index:150;background:#080808;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .4s ease}" +
+      "#upd.out{animation:fadeOut .3s ease forwards}" +
+      "#upd .upd-box{width:100%;max-width:440px;max-height:100%;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px 26px 24px;text-align:center;box-shadow:0 30px 60px #000c;animation:popIn .5s var(--spring)}" +
+      "#upd .icon-box{margin-bottom:14px}" +
+      "#upd h2{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;margin-bottom:10px}" +
+      "#upd .upd-v{display:inline-block;padding:5px 14px;border-radius:999px;background:#fb333324;border:1px solid #fb333380;font:700 .8rem 'Space Grotesk',sans-serif;letter-spacing:.06em}" +
+      "#upd .upd-h{margin:20px 0 8px;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red);font-weight:700;text-align:left}" +
+      "#upd ul{list-style:none;text-align:left;display:flex;flex-direction:column;gap:8px;margin-bottom:22px}" +
+      "#upd li{display:flex;gap:10px;font-size:.85rem;line-height:1.45;color:#ddd;padding:10px 12px;background:#ffffff06;border:1px solid var(--line);border-radius:12px}" +
+      "#upd li:before{content:'\\2022';color:var(--red);font-weight:700}";
+    document.head.appendChild(st);
+    const o = document.createElement("div");
+    o.id = "upd";
+    o.setAttribute("role", "dialog");
+    o.setAttribute("aria-modal", "true");
+    o.innerHTML =
+      '<div class="upd-box"><div class="icon-box"><i class="fa-solid fa-bolt"></i></div>' +
+      "<h2>Nova update!</h2>" +
+      '<span class="upd-v"></span>' +
+      '<div class="upd-h">O que mudou</div><ul></ul>' +
+      '<button class="btn block" type="button"><span>Continuar</span><i class="fa-solid fa-arrow-right"></i></button></div>';
+    $(".upd-v", o).textContent = "Versão " + APP_VER;
+    const ul = $("ul", o);
+    APP_NOTES.forEach((t) => {
+      const li = document.createElement("li");
+      li.textContent = t;
+      ul.appendChild(li);
+    });
+    $("button", o).onclick = () => {
+      cfg.set("ver", APP_VER);
+      o.classList.add("out");
+      setTimeout(
+        () => {
+          o.remove();
+          st.remove();
+          res();
+        },
+        reduceMotion() ? 0 : 300,
+      );
+    };
+    document.body.appendChild(o);
+    $("button", o).focus({ preventScroll: !0 });
+  });
+}
 async function endSplash() {
   const e = $("#splash"),
     t = $("#splash-ui"),
@@ -3178,6 +3241,7 @@ async function endSplash() {
 }
 (window.addEventListener("DOMContentLoaded", async () => {
   document.body.classList.add("booting");
+  await updCheck();
   const e = $("#splash-logo").cloneNode(),
     t = $("#splash-ui").cloneNode(!0);
   (e.removeAttribute("id"),
