@@ -3606,3 +3606,70 @@ body.reduce-anim #view-home .cf-card * {
 .warn-box b {
   color: #fff;
 }
+
+/* =====================================================
+   TRANSIÇÃO DO CARROSSEL (Play → PS1 / PSP, e volta)
+   Anima só opacity/translate/scale, para não brigar com o
+   transform inline que o app.js usa para posicionar os cards.
+   ===================================================== */
+@keyframes cfCardIn {
+  0% {
+    opacity: 0;
+    translate: 70px 0;
+    scale: 0.86;
+  }
+}
+@keyframes cfSoftIn {
+  0% {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+#view-home .cf-card {
+  animation: cfCardIn 0.65s var(--ease) backwards;
+}
+#view-home .cf-card:nth-child(1) {
+  animation-delay: 0.04s;
+}
+#view-home .cf-card:nth-child(2) {
+  animation-delay: 0.12s;
+}
+#view-home .cf-card:nth-child(3) {
+  animation-delay: 0.2s;
+}
+#view-home .cf-dots,
+#view-home .cf-hint,
+#view-home .cf-back {
+  animation: cfSoftIn 0.5s var(--ease) 0.3s backwards;
+}
+
+/* =====================================================
+   ETAPA DA PASTA: botões organizados
+   ===================================================== */
+#st2 .warn-box {
+  margin-bottom: 24px;
+}
+/* 1) Baixar estrutura (secundário) */
+#st2 #btn-zip {
+  margin: 0 0 26px !important;
+}
+/* 2) Selecionar pasta (principal) */
+#st2 #btn-pick {
+  margin: 0 0 14px !important;
+}
+/* 3) Multiplayer: ação discreta, separada das outras */
+#st2 #btn-mponly {
+  margin: 0 !important;
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+#st2 #btn-mponly:hover {
+  background: #ffffff0d;
+  color: #fff;
+}
+#st2 .dots {
+  margin-top: 26px;
+}
