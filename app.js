@@ -1718,7 +1718,8 @@ function ldLoop(e) {
 }
 function ldStart(e) {
   const t = $("#p-loading");
-  (t.classList.remove("hidden", "go"),
+  ($("#player").classList.add("ldg"),
+    t.classList.remove("hidden", "go"),
     ($(".ld-name", t).textContent = fmtName(e.name).display),
     ldStatus("Preparando..."),
     (ldUp = ldUI(t)),
@@ -1732,7 +1733,8 @@ function ldStart(e) {
     (ldRaf = requestAnimationFrame(ldLoop)));
 }
 function ldStop() {
-  (cancelAnimationFrame(ldRaf),
+  ($("#player").classList.remove("ldg", "barhide"),
+    cancelAnimationFrame(ldRaf),
     clearTimeout(ldTm),
     (ldRaf = 0),
     (ldFin = null),
@@ -1762,6 +1764,7 @@ function ldFinish() {
     a = $("#ejs-host"),
     s = () => {
       (t.classList.add("go"),
+        $("#player").classList.remove("ldg"),
         a && (a.classList.remove("reveal"), a.offsetWidth, a.classList.add("reveal")));
       try {
         paused || autoPaused || window.EJS_emulator?.play?.();
@@ -2094,6 +2097,9 @@ function setPaused(e) {
     a.classList.add("swap"));
 }
 (($("#p-back").onclick = exitPlayer),
+  ($("#p-hide").onclick = () => $("#player").classList.add("barhide")),
+  ($("#p-show").onclick = () => $("#player").classList.remove("barhide")),
+  ($("#ld-cancel").onclick = exitPlayer),
   ($("#p-pause").onclick = () => {
     window.EJS_emulator && setPaused(!paused);
   }));
