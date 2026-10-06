@@ -3717,3 +3717,66 @@ body.reduce-anim #view-home .cf-card * {
 body.playing .ad-slot {
   display: none !important;
 }
+
+/* barra do player: some durante o carregamento e pode ser escondida */
+#player.ldg .p-bar,
+#player.barhide .p-bar {
+  display: none;
+}
+#p-show {
+  display: none;
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
+  z-index: 8;
+  width: 34px;
+  height: 34px;
+  opacity: 0.5;
+  background: #000000a6;
+}
+#p-show:hover {
+  opacity: 1;
+}
+#player.barhide:not(.ldg):not(.editing) #p-show {
+  display: flex;
+}
+.ld-cancel {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(10px, env(safe-area-inset-left));
+  z-index: 3;
+}
+
+/* anúncio na tela de carregamento (some quando o jogo termina de carregar) */
+.ad-load {
+  position: absolute;
+  z-index: 3;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.ad-load.on {
+  display: flex;
+  animation: fadeUp 0.5s var(--ease) both;
+}
+.p-loading.adon .ad-load {
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  translate: -50% 0;
+}
+.p-loading.adside .ad-load {
+  right: max(14px, env(safe-area-inset-right));
+  top: 50%;
+  translate: 0 -50%;
+}
+.p-loading.adside .ld {
+  translate: -22vw 0;
+}
+.p-loading.adon .ld-tip,
+.p-loading.adside .ld-tip {
+  display: none;
+}
+.p-loading.adon.tip .ld {
+  translate: none;
+}
