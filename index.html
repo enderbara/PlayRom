@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
+   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
@@ -25,23 +25,50 @@
         navigator.serviceWorker.register("sw.js").catch(function () {});
       })();
     </script>
- <link rel="icon" href="logo.png" />
-    
-    <!-- Fontes do Google Corrigidas -->
+    <link rel="icon" href="logo.png" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    
-    <!-- Ícones FontAwesome Corrigidos com crossorigin -->
-    <link 
-      rel="stylesheet" 
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+
+    <!-- Font Awesome (cdnjs) com reserva automática (jsDelivr) -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link
+      id="fa-main"
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       crossorigin="anonymous"
-      referrerpolicy="no-referrer"
     />
+    <script>
+      (function () {
+        var tried = false;
+        function fallback() {
+          if (tried) return;
+          tried = true;
+          var l = document.createElement("link");
+          l.rel = "stylesheet";
+          l.crossOrigin = "anonymous";
+          l.href = "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css";
+          document.head.appendChild(l);
+        }
+        var main = document.getElementById("fa-main");
+        main.addEventListener("error", fallback);
+        /* se a folha carregou mas a fonte dos ícones não, usa a reserva */
+        window.addEventListener("load", function () {
+          setTimeout(function () {
+            try {
+              var ok = document.fonts && document.fonts.check('900 1em "Font Awesome 6 Free"');
+              if (!ok) fallback();
+            } catch (e) {}
+          }, 1500);
+        });
+      })();
+    </script>
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
