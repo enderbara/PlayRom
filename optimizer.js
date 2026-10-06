@@ -1,67 +1,110 @@
 "use strict";
 
 /*
- * Otimização de desempenho do emulador
- * ------------------------------------
- * Existem 4 níveis de otimização. Cada nível inclui os anteriores:
+ * Otimizador automático do PlayRom.io
+ * -----------------------------------
+ * 4 níveis, cada um inclui os anteriores:
+ *   0  Nenhum:   usa as configurações do jogador
+ *   1  Leve:     sem efeitos de imagem + opções leves do núcleo (áudio, texturas)
+ *   2  Médio:    pulo de quadros automático / 1 quadro
+ *   3  Alto:     pulo de quadros fixo + atalhos de velocidade (pode causar pequenos defeitos)
+ *   4  Máximo:   pulo de quadros agressivo (a imagem fica menos fluida, mas o jogo mantém a velocidade)
  *
- *   0  Nenhuma: usa exatamente as configurações escolhidas pelo jogador
- *   1  Leve:    desliga efeitos de imagem (nitidez, scanlines, vinheta, cores) e usa filtro nítido
- *   2  Médio:   liga o pulo de quadros automático do núcleo do PS1
- *   3  Máximo:  pulo de quadros fixo + atalhos de velocidade do núcleo
- *              (podem causar pequenos defeitos em poucos jogos)
- *
- * O nível usado é o MAIOR entre:
- *   - o "nível mínimo" escolhido em Configurações › Vídeo (manual)
- *   - o nível que a otimização automática alcançou (ela sobe sozinha quando o jogo trava)
- *
- * A otimização automática vigia o FPS. Se o jogo ficar lento, ela sobe UM nível, avisa na tela
- * e volta a medir. O nível alcançado fica salvo por jogo, então da próxima vez o jogo já abre
- * otimizado. No multiplayer, o anfitrião primeiro reduz a qualidade do vídeo enviado (veja
- * netopt.js) e só depois mexe no emulador.
+ * O nível usado é o MAIOR entre o mínimo manual (S.optMin) e o nível automático.
+ * Vigia o FPS: se o jogo ficar lento, sobe de nível (2 níveis de uma vez se estiver MUITO lento,
+ * ex.: PSP a 2 FPS), avisa na tela e guarda o nível por jogo para abrir já otimizado da próxima vez.
+ * Funciona em PS1, PSP e Mega Drive (Atari 2600 só usa o nível 1, pois é muito leve).
  */
 
 const AutoOpt = {
-  MAX: 3,
+  MAX: 4,
   STORE_KEY: "autoOptLevels",
-  LAG_RATIO: 0.75, // abaixo de 75% do FPS esperado conta como travando
+  LAG_RATIO: 0.75, // abaixo de 75% do FPS esperado = travando
+  SEVERE_RATIO: 0.4, // abaixo de 40% = muito lento: reage mais rápido e sobe 2 níveis
   LAG_SECONDS: 3, // segundos seguidos de lentidão antes de agir
+  SEVERE_SECONDS: 2, // idem, quando está muito lento
   GRACE_SECONDS: 6, // tolerância depois que o jogo começa
-  COOLDOWN_SECONDS: 6, // espera depois de cada ajuste antes de medir de novo
+  COOLDOWN_SECONDS: 5, // espera depois de cada ajuste antes de medir de novo
 
-  level: 0, // nível alcançado automaticamente
+  level: 0,
   game: "",
   lagSeconds: 0,
   wait: 0,
   warnedMax: false,
 };
 
-/* Opções do núcleo PS1 (PCSX-ReARMed) aplicadas em cada nível. */
+/* Opções do núcleo aplicadas em cada nível (cumulativo), por console. */
 const AUTO_OPT_CORE = {
-  1: {},
-  2: {
-    pcsx_rearmed_frameskip_type: "auto",
+  ps1: {
+    1: {
+      pcsx_rearmed_spu_reverb: "disabled",
+      pcsx_rearmed_spu_interpolation: "off",
+      pcsx_rearmed_neon_enhancement_enable: "disabled",
+      pcsx_rearmed_neon_interlace_enable: "disabled",
+      pcsx_rearmed_dithering: "disabled",
+    },
+    2: { pcsx_rearmed_frameskip_type: "auto" },
+    3: {
+      pcsx_rearmed_frameskip_type: "fixed interval",
+      pcsx_rearmed_frameskip_interval: "1",
+      pcsx_rearmed_nostalls: "enabled",
+      pcsx_rearmed_nosmccheck: "enabled",
+      pcsx_rearmed_nogteflags: "enabled",
+      pcsx_rearmed_gteregsunneeded: "enabled",
+    },
+    4: { pcsx_rearmed_frameskip_interval: "2" },
   },
-  3: {
-    pcsx_rearmed_frameskip_type: "fixed_interval",
-    pcsx_rearmed_frameskip_interval: "1",
-    pcsx_rearmed_nostalls: "enabled",
-    pcsx_rearmed_nosmccheck: "enabled",
-    pcsx_rearmed_nogteflags: "enabled",
-    pcsx_rearmed_gteregsunneeded: "enabled",
+  psp: {
+    1: {
+      ppsspp_lazy_texture_caching: "enabled",
+      ppsspp_skip_gpu_readbacks: "enabled",
+      ppsspp_texture_scaling_level: "Off",
+      ppsspp_texture_anisotropic_filtering: "off",
+    },
+    2: {
+      ppsspp_auto_frameskip: "enabled",
+      ppsspp_frameskip_type: "Number of frames",
+      ppsspp_frameskip: "1",
+      ppsspp_skip_buffer_effects: "enabled",
+    },
+    3: {
+      ppsspp_frameskip: "2",
+      ppsspp_texture_filtering: "Nearest",
+      ppsspp_lower_resolution_for_effects: "Aggressive",
+      ppsspp_spline_quality: "Low",
+      ppsspp_hardware_tesselation: "disabled",
+    },
+    4: { ppsspp_frameskip: "3", ppsspp_inflight_frames: "Up to 2" },
   },
+  md: {
+    2: {
+      genesis_plus_gx_audio_filter: "disabled",
+      genesis_plus_gx_blargg_ntsc_filter: "disabled",
+    },
+    3: { genesis_plus_gx_no_sprite_limit: "disabled" },
+  },
+  atari: {},
 };
 
-const AUTO_OPT_NAMES = { 1: "leve", 2: "média", 3: "máxima" };
+/* Consoles em que o otimizador atua. */
+const AUTO_OPT_SYS = ["ps1", "psp", "md", "atari"];
+
+/* Nível máximo útil por console (o Atari não precisa de mais que o nível 1). */
+const AUTO_OPT_CAP = { ps1: 4, psp: 4, md: 3, atari: 1 };
 
 const AUTO_OPT_MESSAGES = {
   1: "Jogo travando: desliguei os efeitos visuais (otimização leve).",
   2: "Ainda lento: ativei o pulo de quadros automático (otimização média).",
-  3: "Ainda lento: otimização máxima ativada. Alguns jogos podem ter pequenos defeitos. Feche outras abas e apps para ajudar.",
+  3: "Ainda lento: otimização alta ativada. Alguns jogos podem ter pequenos defeitos.",
+  4: "Ainda lento: otimização máxima ativada. A imagem fica menos fluida, mas o jogo mantém a velocidade. Feche outras abas e apps.",
 };
 
 function autoOptEnabled() {
-  return S.autoOpt !== false && SYS === "ps1";
+  return S.autoOpt !== false && AUTO_OPT_SYS.includes(SYS);
+}
+
+function autoOptCap() {
+  return Math.min(AutoOpt.MAX, AUTO_OPT_CAP[SYS] || 1);
 }
 
 function autoOptMin(settings) {
@@ -71,7 +114,7 @@ function autoOptMin(settings) {
 
 /* Nível realmente em uso agora. */
 function autoOptLevel(settings) {
-  return Math.max(AutoOpt.level, autoOptMin(settings));
+  return Math.min(autoOptCap(), Math.max(AutoOpt.level, autoOptMin(settings)));
 }
 
 function autoOptSavedLevels() {
@@ -102,8 +145,8 @@ function autoOptStart(gameName) {
   if (!autoOptEnabled()) return;
 
   const saved = autoOptSavedLevels()[AutoOpt.game];
-  if (saved) AutoOpt.level = Math.min(AutoOpt.MAX, saved);
-  else if (autoOptWeakDevice()) AutoOpt.level = 1;
+  if (saved) AutoOpt.level = Math.min(autoOptCap(), saved);
+  else if (autoOptWeakDevice()) AutoOpt.level = SYS === "psp" ? 2 : SYS === "ps1" ? 1 : 0;
 }
 
 /* Chamado quando o jogo sai: limpa o estado. */
@@ -117,37 +160,44 @@ function autoOptReset() {
 
 /* Devolve as configurações de vídeo já otimizadas (sem alterar as salvas do jogador). */
 function autoOptApply(settings) {
-  if (autoOptLevel(settings) < 1) return settings;
+  if (!autoOptEnabled() || autoOptLevel(settings) < 1) return settings;
   return Object.assign({}, settings, { perf: true, filter: "pixel" });
+}
+
+/* Muda uma opção do núcleo em execução. */
+function autoOptSetCore(emu, key, value) {
+  try {
+    if (typeof emu.changeSettingOption === "function") emu.changeSettingOption(key, value);
+  } catch (err) {
+    console.warn("otimização: não consegui mudar " + key, err);
+  }
+  try {
+    emu.gameManager && typeof emu.gameManager.setVariable === "function" && emu.gameManager.setVariable(key, value);
+  } catch {}
 }
 
 /* Aplica no núcleo as opções do nível atual (e dos anteriores). */
 function autoOptApplyCore() {
   const emu = window.EJS_emulator;
-  if (SYS !== "ps1") return;
-  if (!emu || typeof emu.changeSettingOption !== "function") return;
+  if (!emu || !autoOptEnabled()) return;
+  const table = AUTO_OPT_CORE[SYS] || {};
   const level = autoOptLevel();
   for (let n = 1; n <= level; n++) {
-    const opts = AUTO_OPT_CORE[n] || {};
-    for (const key of Object.keys(opts)) {
-      try {
-        emu.changeSettingOption(key, opts[key]);
-      } catch (err) {
-        console.warn("otimização: não consegui mudar " + key, err);
-      }
-    }
+    const opts = table[n] || {};
+    for (const key of Object.keys(opts)) autoOptSetCore(emu, key, opts[key]);
   }
 }
 
-/* Sobe um nível, aplica e avisa. */
-function autoOptStep() {
-  AutoOpt.level = Math.min(AutoOpt.MAX, autoOptLevel() + 1);
+/* Sobe de nível (1 ou 2), aplica e avisa. */
+function autoOptStep(jump) {
+  const cap = autoOptCap();
+  AutoOpt.level = Math.min(cap, autoOptLevel() + (jump || 1));
   AutoOpt.lagSeconds = 0;
   AutoOpt.wait = AutoOpt.COOLDOWN_SECONDS;
   autoOptSave();
   applyAll(S);
   autoOptApplyCore();
-  toast(AUTO_OPT_MESSAGES[AutoOpt.level], 4500);
+  toast(AUTO_OPT_MESSAGES[AutoOpt.level] || AUTO_OPT_MESSAGES[4], 4500);
 }
 
 function autoOptCanMeasure() {
@@ -158,8 +208,10 @@ function autoOptCanMeasure() {
     !gsOpen &&
     !svOpen &&
     !rsOpen &&
+    !tpOpen &&
     !document.hidden &&
-    !padEdit
+    !padEdit &&
+    !(typeof mp !== "undefined" && mp && mp.role === "guest")
   );
 }
 
@@ -180,8 +232,9 @@ function autoOptTick(fps) {
     return;
   }
 
+  const severe = fps < expected * AutoOpt.SEVERE_RATIO;
   AutoOpt.lagSeconds += 1;
-  if (AutoOpt.lagSeconds < AutoOpt.LAG_SECONDS) return;
+  if (AutoOpt.lagSeconds < (severe ? AutoOpt.SEVERE_SECONDS : AutoOpt.LAG_SECONDS)) return;
 
   // Anfitrião no multiplayer: o vídeo enviado também gasta CPU. Reduz ele antes do emulador.
   if (typeof netoptShedLoad === "function" && netoptShedLoad("cpu")) {
@@ -190,10 +243,17 @@ function autoOptTick(fps) {
     return;
   }
 
-  if (autoOptLevel() < AutoOpt.MAX) {
-    autoOptStep();
+  if (autoOptLevel() < autoOptCap()) {
+    autoOptStep(severe ? 2 : 1);
   } else if (!AutoOpt.warnedMax) {
     AutoOpt.warnedMax = true;
-    toast("Já estou no modo mais leve. Se continuar lento, tente selecionar uma BIOS.", 5000);
+    toast(
+      SYS === "psp"
+        ? "Já estou no modo mais leve. O PSP é muito pesado no navegador: em celular fraco ele pode não chegar a 30 FPS."
+        : SYS === "ps1"
+          ? "Já estou no modo mais leve. Se continuar lento, tente selecionar uma BIOS."
+          : "Já estou no modo mais leve. Feche outras abas e apps.",
+      5500,
+    );
   }
 }
