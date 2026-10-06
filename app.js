@@ -3250,7 +3250,7 @@ async function endSplash() {
   window.addEventListener("beforeunload", () => {
     romUrl && URL.revokeObjectURL(romUrl);
   }));
-const TOS_V = 1,
+const TOS_V = 2,
   tosEl = $("#tos"),
   tosCk = $("#tos-ck"),
   tosOk = $("#tos-ok");
