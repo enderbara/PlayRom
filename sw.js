@@ -1,11 +1,10 @@
-/* PlayRom.io - Service Worker Limpo */
+/* PlayRom.io - Service Worker Otimizado Sem Bloqueios */
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // Evita erros de cache em requisições de outras origens
   if (req.cache === "only-if-cached" && req.mode !== "same-origin") return;
 
   event.respondWith(
@@ -15,7 +14,7 @@ self.addEventListener("fetch", (event) => {
 
         const headers = new Headers(res.headers);
         
-        // Configuração amigável que libera o emulador e NÃO bloqueia ícones ou CDNs externos
+        // Ativa o isolamento de hardware de forma compatível com fontes e ícones externos
         headers.set("Cross-Origin-Opener-Policy", "same-origin");
         headers.set("Cross-Origin-Embedder-Policy", "credentialless");
 
@@ -26,7 +25,7 @@ self.addEventListener("fetch", (event) => {
         });
       })
       .catch((err) => {
-        console.error("[sw] Erro de rede:", err);
+        console.error("[sw] Falha na rede:", err);
         return Response.error();
       })
   );
