@@ -269,21 +269,141 @@ const con = () => CONSOLES[SYS] || CONSOLES.ps1,
     md: { Y: "A", B: "B", A: "C", L: "X", X: "Y", R: "Z", START: "START", SELECT: "MODE" },
     atari: { B: "FIRE", SELECT: "SELECT", START: "RESET" },
   };
+
+/* ===== Carrossel de consoles ===== */
+const CF_COLORS = { ps1: "#fb3333", md: "#3b82f6", atari: "#f59e0b" };
+let cfIdx = 0,
+  cfGo = null,
+  cfDrag = null,
+  cfMoved = false;
+
+/* soltar o mouse/dedo: decide se foi arrasto (troca de card) ou clique */
+window.addEventListener("pointerup", (e) => {
+  if (!cfDrag) return;
+  const dx = e.clientX - cfDrag.x,
+    g = cfDrag.g;
+  cfDrag = null;
+  g.classList.remove("dragging");
+  if (Math.abs(dx) > 8) {
+    cfMoved = true;
+    setTimeout(() => (cfMoved = false), 80);
+    if (Math.abs(dx) > 40 && cfGo) cfGo(cfIdx + (dx < 0 ? 1 : -1));
+  }
+});
+/* setas do teclado na tela de consoles */
+window.addEventListener("keydown", (e) => {
+  if (!cfGo || document.body.classList.contains("playing")) return;
+  const v = $("#view-home");
+  if (!v || !v.classList.contains("show")) return;
+  if (e.code === "ArrowRight") cfGo(cfIdx + 1);
+  else if (e.code === "ArrowLeft") cfGo(cfIdx - 1);
+});
+
 function renderHome() {
   const g = $("#home-grid");
   if (!g) return;
   g.textContent = "";
-  Object.entries(CONSOLES).forEach(([k, c]) => {
-    const n = library.filter((x) => (x.sys || "ps1") === k).length,
+
+  /* wrapper .cf (as setas e os pontinhos ficam dentro dele) */
+  let cf = g.parentElement;
+  if (!cf.classList.contains("cf")) {
+    cf = document.createElement("div");
+    cf.className = "cf";
+    g.before(cf);
+    cf.appendChild(g);
+  }
+  cf.querySelectorAll(".cf-arrow,.cf-dots,.cf-hint").forEach((x) => x.remove());
+
+  const keys = Object.keys(CONSOLES);
+  const cards = keys.map((k) => {
+    const c = CONSOLES[k],
+      n = library.filter((x) => (x.sys || "ps1") === k).length,
       b = document.createElement("button");
     b.type = "button";
-    b.className = "mp-opt";
-    b.innerHTML = '<div class="icon-box"><i class="fa-solid ' + c.icon + '"></i></div><h3></h3><p></p><div class="on" data-on="' + k + '"><i class="fa-solid fa-user"></i><b>0</b><span>Pessoas online</span></div>';
+    b.className = "cf-card";
+    b.style.setProperty("--ac", CF_COLORS[k] || "#fb3333");
+    b.innerHTML =
+      '<div class="cf-ico"><i class="fa-solid ' + c.icon + '"></i></div><h3></h3><p></p>' +
+      '<div class="on" data-on="' + k + '"><i class="fa-solid fa-circle"></i><b>0</b><span>Pessoas online</span></div>' +
+      '<span class="cf-go">Jogar</span>';
     b.querySelector("h3").textContent = c.name;
     b.querySelector("p").textContent = n + " jogo(s)";
-    b.onclick = () => setSys(k);
     g.appendChild(b);
+    return b;
   });
+
+  const mk = (cls, icon) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "cf-arrow " + cls;
+    b.setAttribute("aria-label", cls === "cf-prev" ? "Anterior" : "Próximo");
+    b.innerHTML = '<i class="fa-solid ' + icon + '"></i>';
+    cf.appendChild(b);
+    return b;
+  };
+  const prev = mk("cf-prev", "fa-chevron-left"),
+    next = mk("cf-next", "fa-chevron-right");
+
+  const dotsEl = document.createElement("div");
+  dotsEl.className = "cf-dots";
+  cf.appendChild(dotsEl);
+  const dots = keys.map((k, i) => {
+    const d = document.createElement("button");
+    d.type = "button";
+    d.className = "cf-dot";
+    d.setAttribute("aria-label", CONSOLES[k].name);
+    d.onclick = () => go(i);
+    dotsEl.appendChild(d);
+    return d;
+  });
+
+  const hint = document.createElement("div");
+  hint.className = "cf-hint";
+  hint.textContent = "Arraste ou use as setas para trocar de console";
+  cf.appendChild(hint);
+
+  function render() {
+    cards.forEach((c, i) => {
+      const d = i - cfIdx,
+        a = Math.abs(d);
+      c.classList.toggle("active", d === 0);
+      c.style.transform =
+        "translate(-50%,-50%) translateX(" + d * 62 + "%) translateZ(" + -a * 140 + "px) " +
+        "rotateY(" + -d * 28 + "deg) scale(" + (d === 0 ? 1 : 0.86) + ")";
+      c.style.opacity = a > 2 ? 0 : 1 - a * 0.3;
+      c.style.zIndex = 10 - a;
+      c.style.pointerEvents = a > 2 ? "none" : "auto";
+      c.tabIndex = d === 0 ? 0 : -1;
+    });
+    dots.forEach((d, i) => d.classList.toggle("active", i === cfIdx));
+    prev.disabled = cfIdx === 0;
+    next.disabled = cfIdx === cards.length - 1;
+  }
+  function go(i) {
+    cfIdx = Math.max(0, Math.min(cards.length - 1, i));
+    render();
+  }
+  cfGo = go;
+  prev.onclick = () => go(cfIdx - 1);
+  next.onclick = () => go(cfIdx + 1);
+
+  /* clique: card lateral só centraliza; card central abre o console */
+  cards.forEach((c, i) => {
+    c.onclick = () => {
+      if (cfMoved) return;
+      if (i !== cfIdx) go(i);
+      else setSys(keys[i]);
+    };
+  });
+
+  g.onpointerdown = (e) => {
+    cfDrag = { x: e.clientX, g };
+    g.classList.add("dragging");
+  };
+
+  /* começa no console que já estava escolhido */
+  cfIdx = SYS && keys.includes(SYS) ? keys.indexOf(SYS) : Math.min(cfIdx, keys.length - 1);
+  render();
   updateOnline();
 }
 function setSys(k, quiet) {
