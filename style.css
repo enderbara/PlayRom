@@ -3717,3 +3717,30 @@ body.reduce-anim #view-home .cf-card * {
 body.playing .ad-slot {
   display: none !important;
 }
+
+/* card de publicidade dentro do carrossel de consoles */
+#view-home .cf-card.ad-card {
+  width: min(320px, 92vw);
+  padding: 12px 10px 14px;
+  cursor: default;
+}
+#view-home .ad-card .ad-tag {
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #777;
+  margin: 2px 0 8px;
+}
+#view-home .ad-card .ad-box {
+  margin: 0 auto;
+}
+#view-home .ad-card .ad-back {
+  margin-top: 12px;
+  padding: 9px 22px;
+  border: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: #ffffff14;
+  color: #ddd;
+}
