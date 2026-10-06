@@ -14,7 +14,7 @@ self.addEventListener("fetch", (event) => {
 
         const headers = new Headers(res.headers);
         
-        // Ativa o isolamento de hardware de forma compatível com fontes e ícones externos
+        // Ativa o isolamento de hardware de forma amigável com fontes e ícones externos
         headers.set("Cross-Origin-Opener-Policy", "same-origin");
         headers.set("Cross-Origin-Embedder-Policy", "credentialless");
 
