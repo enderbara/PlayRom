@@ -8,23 +8,6 @@
     />
     <meta name="theme-color" content="#080808" />
     <title>PlayRom.io</title>
-    <script>
-      (function () {
-        if (window.crossOriginIsolated) return;
-        if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
-        var k = "playrom-coi-reload";
-        if (!navigator.serviceWorker.controller) {
-          navigator.serviceWorker.addEventListener("controllerchange", function () {
-            try {
-              if (sessionStorage.getItem(k)) return;
-              sessionStorage.setItem(k, "1");
-            } catch (e) {}
-            location.reload();
-          });
-        }
-        navigator.serviceWorker.register("sw.js").catch(function () {});
-      })();
-    </script>
     <link rel="icon" href="logo.png" />
 
     <!-- Google Fonts -->
