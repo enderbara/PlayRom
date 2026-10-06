@@ -1,21 +1,6 @@
-/* PlayRom.io - service worker OTIMIZADO
-   Injeta COOP/COEP no formato "require-corp" exigido pelo EmulatorJS para PSP,
-   garantindo acesso total ao hardware (multi-threads). */
-
+/* PlayRom.io - Service Worker Corrigido */
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
-
-self.addEventListener("notificationclick", (e) => {
-  e.notification.close();
-  e.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((l) => {
-      for (const c of l) {
-        if ("focus" in c) return c.focus();
-      }
-      return self.clients.openWindow("./");
-    }),
-  );
-});
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
@@ -29,9 +14,9 @@ self.addEventListener("fetch", (event) => {
 
         const headers = new Headers(res.headers);
         
-        // 🔥 MUDANÇA CRUCIAL: Força o padrão que o emulador de PSP precisa para rodar pesado
-        headers.set("Cross-Origin-Embedder-Policy", "require-corp");
+        // Ativa o isolamento de hardware de maneira amigável a CDNs externos
         headers.set("Cross-Origin-Opener-Policy", "same-origin");
+        headers.set("Cross-Origin-Embedder-Policy", "credentialless");
 
         return new Response(res.body, {
           status: res.status,
@@ -40,8 +25,8 @@ self.addEventListener("fetch", (event) => {
         });
       })
       .catch((err) => {
-        console.error("[sw] falha no fetch:", err);
+        console.error("[sw] Falha no fetch:", err);
         return Response.error();
-      }),
+      })
   );
 });
