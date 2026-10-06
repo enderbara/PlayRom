@@ -3719,8 +3719,10 @@ body.playing .ad-slot {
 }
 
 /* barra do player: some durante o carregamento e pode ser escondida */
-#player.ldg .p-bar,
 #player.barhide .p-bar {
+  display: none;
+}
+#player:has(#p-loading:not(.hidden):not(.go)) .p-bar {
   display: none;
 }
 #p-show {
@@ -3737,14 +3739,8 @@ body.playing .ad-slot {
 #p-show:hover {
   opacity: 1;
 }
-#player.barhide:not(.ldg):not(.editing) #p-show {
+#player.barhide:not(.editing) #p-show {
   display: flex;
-}
-.ld-cancel {
-  position: absolute;
-  top: max(10px, env(safe-area-inset-top));
-  left: max(10px, env(safe-area-inset-left));
-  z-index: 3;
 }
 
 /* anúncio na tela de carregamento (some quando o jogo termina de carregar) */
