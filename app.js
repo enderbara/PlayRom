@@ -1787,6 +1787,16 @@ function ldFinish() {
 }
 const EJS_VER = "4.2.3",
   EJS_PATH = "https://cdn.emulatorjs.org/" + EJS_VER + "/data/";
+/* Opções do núcleo PPSSPP: só aceleram, sem baixar a qualidade da imagem
+   (a resolução continua a nativa do PSP, 480x272) */
+const PSP_OPTS = {
+  ppsspp_internal_resolution: "480x272",
+  ppsspp_auto_frameskip: "enabled",
+  ppsspp_fast_memory: "enabled",
+  ppsspp_lazy_texture_caching: "enabled",
+  ppsspp_inflight_frames: "Up to 2",
+  ppsspp_io_timing_method: "Fast",
+};
 let scriptEl = null,
   romUrl = null,
   startTimer = null,
@@ -1991,7 +2001,11 @@ function playGame(e) {
         (window.EJS_CacheLimit = 1),
         (window.EJS_disableLocalStorage = !0),
         (window.EJS_defaultOptions =
-          SYS === "ps1" ? { pcsx_rearmed_frameskip_type: "disabled", pcsx_rearmed_drc: "enabled" } : {}),
+          SYS === "ps1"
+            ? { pcsx_rearmed_frameskip_type: "disabled", pcsx_rearmed_drc: "enabled" }
+            : SYS === "psp"
+              ? PSP_OPTS
+              : {}),
         (window.EJS_biosUrl = biosPick || ""),
         (window.EJS_Buttons = {
           playPause: !1,
