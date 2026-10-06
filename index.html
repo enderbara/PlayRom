@@ -28,17 +28,19 @@
       })();
     </script>
     <link rel="icon" href="logo.png" />
-    <link rel="preconnect" href="https://cdn.emulatorjs.org" crossorigin />
-    <link rel="dns-prefetch" href="https://cdn.emulatorjs.org" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://emulatorjs.org" crossorigin />
+    <link rel="dns-prefetch" href="https://emulatorjs.org" />
+    <link rel="preconnect" href="https://googleapis.com" />
+    <link rel="preconnect" href="https://gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+      href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- CORREÇÃO: Adicionado crossorigin="anonymous" para funcionar com o novo sw.js -->
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      href="https://cloudflare.com"
+      crossorigin="anonymous"
     />
     <link rel="stylesheet" href="style.css" />
   </head>
