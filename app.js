@@ -2095,9 +2095,9 @@ function setPaused(e) {
     a.classList.add("swap"));
 }
 (($("#p-back").onclick = exitPlayer),
-  ($("#ld-cancel").onclick = exitPlayer),
-  ($("#p-hide").onclick = () => $("#player").classList.add("barhide")),
-  ($("#p-show").onclick = () => $("#player").classList.remove("barhide")),
+  ($("#ld-cancel") && ($("#ld-cancel").onclick = exitPlayer)),
+  ($("#p-hide") && ($("#p-hide").onclick = () => $("#player").classList.add("barhide"))),
+  ($("#p-show") && ($("#p-show").onclick = () => $("#player").classList.remove("barhide"))),
   ($("#p-pause").onclick = () => {
     window.EJS_emulator && setPaused(!paused);
   }));
