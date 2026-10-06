@@ -229,11 +229,18 @@ async function dbClear() {
 /* ===== Consoles ===== */
 const CONSOLES = {
   ps1: {
-    name: "PlayStation 1", short: "PS1", core: "psx", icon: "fa-compact-disc", lvl: 3,
+    name: "PS1", short: "PS1", core: "psx", icon: "fa-compact-disc", lvl: 3,
     folders: ["ps1", "psx", "playstation", "playstation1", "play1", "psone"],
     exts: /\.(chd|pbp|iso|bin|img)$/i, extTxt: ".chd .pbp .iso .bin .img",
     btns: ["UP", "DOWN", "LEFT", "RIGHT", "A", "B", "X", "Y", "L", "R", "L2", "R2", "START", "SELECT"],
     lbl: { A: "Botão ○ (A)", B: "Botão ✕ (B)", X: "Botão △ (X)", Y: "Botão □ (Y)", L: "Botão L1", R: "Botão R1", L2: "Botão L2", R2: "Botão R2", START: "Start", SELECT: "Select" },
+  },
+  psp: {
+    name: "PSP", short: "PSP", core: "psp", icon: "fa-gamepad", lvl: 3,
+    folders: ["psp", "playstationportable", "sonypsp"],
+    exts: /\.(iso|cso|pbp)$/i, extTxt: ".iso .cso .pbp",
+    btns: ["UP", "DOWN", "LEFT", "RIGHT", "A", "B", "X", "Y", "L", "R", "START", "SELECT"],
+    lbl: { A: "Botão ○ (A)", B: "Botão ✕ (B)", X: "Botão △ (X)", Y: "Botão □ (Y)", L: "Botão L", R: "Botão R", START: "Start", SELECT: "Select" },
   },
   md: {
     name: "Mega Drive", short: "MD", core: "segaMD", icon: "fa-gamepad", lvl: 2,
@@ -243,14 +250,20 @@ const CONSOLES = {
     lbl: { Y: "Botão A", B: "Botão B", A: "Botão C", L: "Botão X", X: "Botão Y", R: "Botão Z", START: "Start", SELECT: "Mode" },
   },
   atari: {
-    name: "Atari 2600", short: "Atari", core: "atari2600", icon: "fa-joystick", lvl: 1,
+    name: "Atari 2600", short: "Atari", core: "atari2600", icon: "fa-gamepad", lvl: 1,
     folders: ["atari", "atari2600", "2600"],
     exts: /\.(a26|bin|zip|7z)$/i, extTxt: ".a26 .bin .zip",
     btns: ["UP", "DOWN", "LEFT", "RIGHT", "B", "SELECT", "START"],
     lbl: { B: "Botão de tiro", SELECT: "Select", START: "Reset" },
   },
 };
-CONSOLES.atari.icon = "fa-gamepad";
+
+/* grupos da tela de consoles: "Play" abre um segundo carrossel com PS1 e PSP */
+const HOME_GROUPS = { play: { name: "Play", icon: "fa-compact-disc", kids: ["ps1", "psp"] } };
+let homeSub = null; /* null = carrossel principal · "play" = dentro do grupo Play */
+const groupOf = (k) => Object.keys(HOME_GROUPS).find((g) => HOME_GROUPS[g].kids.includes(k)) || null,
+  kidsOf = (k) => (HOME_GROUPS[k] ? HOME_GROUPS[k].kids : [k]);
+
 let SYS = null, /* console escolhido agora (null = tela de escolha) */
   ctx = "home"; /* "home" = página Consoles (sistema) · "console" = dentro de um console (jogos) */
 const con = () => CONSOLES[SYS] || CONSOLES.ps1,
@@ -262,7 +275,7 @@ const con = () => CONSOLES[SYS] || CONSOLES.ps1,
     const m = normFolder(n);
     return Object.keys(CONSOLES).find((k) => CONSOLES[k].folders.includes(m)) || null;
   },
-  /* configurações que só aparecem de certo "nível" em diante (Atari 1, Mega Drive 2, PS1 3) */
+  /* configurações que só aparecem de certo "nível" em diante (Atari 1, Mega Drive 2, PS1/PSP 3) */
   KEYLVL = { color: 2, saturation: 2, scan: 2, intScale: 2, gpSwap: 2, padType: 2, resetMode: 2, sharp: 3, vig: 3, rot: 3, perf: 3, autoOpt: 3 },
   ATARI_KEYS = new Set(["reduceAnim", "pad", "opacity", "scale", "vib", "gpOn", "filter", "aspect", "showFps", "autoPause", "notify"]),
   PADLBL = {
@@ -271,7 +284,7 @@ const con = () => CONSOLES[SYS] || CONSOLES.ps1,
   };
 
 /* ===== Carrossel de consoles ===== */
-const CF_COLORS = { ps1: "#fb3333", md: "#3b82f6", atari: "#f59e0b" };
+const CF_COLORS = { play: "#fb3333", ps1: "#fb3333", psp: "#a855f7", md: "#3b82f6", atari: "#f59e0b" };
 let cfIdx = 0,
   cfGo = null,
   cfDrag = null,
@@ -299,7 +312,7 @@ window.addEventListener("keydown", (e) => {
   else if (e.code === "ArrowLeft") cfGo(cfIdx - 1);
 });
 
-function renderHome() {
+function renderHome(startIdx) {
   const g = $("#home-grid");
   if (!g) return;
   g.textContent = "";
@@ -313,11 +326,41 @@ function renderHome() {
     cf.appendChild(g);
   }
   cf.querySelectorAll(".cf-arrow,.cf-dots,.cf-hint").forEach((x) => x.remove());
+  const box = cf.parentElement;
+  box.querySelectorAll(".cf-back").forEach((x) => x.remove());
 
-  const keys = Object.keys(CONSOLES);
+  const ROOT = ["play", "md", "atari"],
+    keys = homeSub ? HOME_GROUPS[homeSub].kids : ROOT;
+
+  /* título e subtítulo mudam dentro do grupo */
+  const ttl = $("#view-home .title"),
+    sub = $("#view-home .subtitle");
+  if (homeSub) {
+    ttl.innerHTML = 'Escolha o <span class="red">' + HOME_GROUPS[homeSub].name + "</span>";
+    sub.textContent = "Escolha entre " + keys.map((k) => CONSOLES[k].name).join(" e ") + ".";
+  } else {
+    ttl.innerHTML = 'Escolha o <span class="red">Console</span>';
+    sub.textContent = "Cada console tem seus próprios jogos, controles, configurações e salas.";
+  }
+
+  /* botão Voltar (só dentro do grupo) */
+  if (homeSub) {
+    const bk = document.createElement("button");
+    bk.type = "button";
+    bk.className = "btn small ghost cf-back";
+    bk.innerHTML = '<i class="fa-solid fa-arrow-left"></i><span>Voltar</span>';
+    bk.onclick = () => {
+      const was = homeSub;
+      homeSub = null;
+      renderHome(ROOT.indexOf(was));
+    };
+    cf.before(bk);
+  }
+
   const cards = keys.map((k) => {
-    const c = CONSOLES[k],
-      n = library.filter((x) => (x.sys || "ps1") === k).length,
+    const grp = HOME_GROUPS[k],
+      c = grp || CONSOLES[k],
+      n = kidsOf(k).reduce((s, x) => s + library.filter((l) => (l.sys || "ps1") === x).length, 0),
       b = document.createElement("button");
     b.type = "button";
     b.className = "cf-card";
@@ -325,7 +368,7 @@ function renderHome() {
     b.innerHTML =
       '<div class="cf-ico"><i class="fa-solid ' + c.icon + '"></i></div><h3></h3><p></p>' +
       '<div class="on" data-on="' + k + '"><i class="fa-solid fa-circle"></i><b>0</b><span>Pessoas online</span></div>' +
-      '<span class="cf-go">Jogar</span>';
+      '<span class="cf-go">' + (grp ? "Abrir" : "Jogar") + "</span>";
     b.querySelector("h3").textContent = c.name;
     b.querySelector("p").textContent = n + " jogo(s)";
     g.appendChild(b);
@@ -351,7 +394,7 @@ function renderHome() {
     const d = document.createElement("button");
     d.type = "button";
     d.className = "cf-dot";
-    d.setAttribute("aria-label", CONSOLES[k].name);
+    d.setAttribute("aria-label", (HOME_GROUPS[k] || CONSOLES[k]).name);
     d.onclick = () => go(i);
     dotsEl.appendChild(d);
     return d;
@@ -387,12 +430,15 @@ function renderHome() {
   prev.onclick = () => go(cfIdx - 1);
   next.onclick = () => go(cfIdx + 1);
 
-  /* clique: card lateral só centraliza; card central abre o console */
+  /* clique: card lateral só centraliza; card central abre o grupo ou o console */
   cards.forEach((c, i) => {
     c.onclick = () => {
       if (cfMoved) return;
       if (i !== cfIdx) go(i);
-      else setSys(keys[i]);
+      else if (HOME_GROUPS[keys[i]]) {
+        homeSub = keys[i];
+        renderHome(0);
+      } else setSys(keys[i]);
     };
   });
 
@@ -401,8 +447,13 @@ function renderHome() {
     g.classList.add("dragging");
   };
 
-  /* começa no console que já estava escolhido */
-  cfIdx = SYS && keys.includes(SYS) ? keys.indexOf(SYS) : Math.min(cfIdx, keys.length - 1);
+  /* posição inicial */
+  let st = startIdx;
+  if (st == null) {
+    const t = keys.includes(SYS) ? SYS : groupOf(SYS);
+    st = t && keys.includes(t) ? keys.indexOf(t) : Math.min(cfIdx, keys.length - 1);
+  }
+  cfIdx = Math.max(0, Math.min(keys.length - 1, st));
   render();
   updateOnline();
 }
@@ -446,7 +497,7 @@ function applySettingsScope() {
 })();
 function onlineOf(k) {
   try {
-    return (mp.online && mp.online[k]) || 0;
+    return kidsOf(k).reduce((s, x) => s + ((mp.online && mp.online[x]) || 0), 0);
   } catch {
     return 0;
   }
@@ -500,7 +551,7 @@ function applyConsolePad() {
     layoutPad();
   } catch {}
 }
-function renderCheck(el, found, counts) {
+function renderCheck(el, found, counts, extra) {
   if (!el) return;
   el.textContent = "";
   Object.entries(CONSOLES).forEach(([k, c]) => {
@@ -510,6 +561,13 @@ function renderCheck(el, found, counts) {
     d.innerHTML = '<i class="fa-solid ' + (ok ? "fa-circle-check" : "fa-circle-xmark") + '"></i><span></span><b></b>';
     d.children[1].textContent = c.short + " · " + c.name;
     d.children[2].textContent = ok ? (counts[k] || 0) + " jogo(s)" : "pasta não encontrada";
+    el.appendChild(d);
+  });
+  (extra || []).forEach((nm) => {
+    const d = document.createElement("div");
+    d.className = "chk bad";
+    d.innerHTML = '<i class="fa-solid fa-folder-minus"></i><span></span><b>remova esta pasta</b>';
+    d.children[1].textContent = "Pasta extra · " + nm;
     el.appendChild(d);
   });
 }
@@ -671,6 +729,10 @@ function viewIn(e) {
   }
 }
 function goView(e) {
+  if (e === "home") {
+    homeSub = groupOf(SYS);
+    renderHome();
+  }
   e === "home" ? (ctx = "home") : (e === "library" || e === "multi") && (ctx = "console");
   typeof mpPresence === "function" && mpPresence();
   const t = $("#view-" + e),
@@ -790,41 +852,54 @@ function showStep(e, t) {
     : n(),
     (curStep = e));
 }
-(($("#btn-mponly").onclick = () => {
+$("#btn-mponly").onclick = () => {
   showApp();
   window.__plPend || toast("Escolha um console para ver as salas", 3500);
-}),
-  ($("#btn-start").onclick = () => showStep("st2")),
-  ($("#btn-pick").onclick = () => pickFolder()),
-  ($("#btn-change").onclick = () => pickFolder()),
-  ($("#btn-retry").onclick = () => {
-    (($("#folder-input").value = ""), showStep("st2"));
-  }),
-  ($("#btn-finish").onclick = showApp),
-  ($("#folder-input").onchange = (e) => {
-    const fs = [...e.target.files],
-      found = {},
-      items = [];
-    if (!fs.length) return;
-    fs.forEach((f) => {
-      const p = (f.webkitRelativePath || "").split("/"),
-        s = p.length > 2 ? sysOfFolder(p[1]) : null;
-      s && ((found[s] = 1), items.push({ name: f.name, size: f.size, lastModified: f.lastModified, file: f, sys: s }));
-    });
-    importFiles(items, e.target, found);
-  }));
-async function importFiles(e, t, found) {
+};
+$("#btn-start").onclick = () => showStep("st2");
+$("#btn-pick").onclick = () => pickFolder();
+$("#btn-change").onclick = () => pickFolder();
+$("#btn-retry").onclick = () => {
+  $("#folder-input").value = "";
+  showStep("st2");
+};
+$("#btn-finish").onclick = showApp;
+$("#folder-input").onchange = (e) => {
+  const fs = [...e.target.files],
+    found = {},
+    items = [],
+    extra = [],
+    fo = {};
+  if (!fs.length) return;
+  fs.forEach((f) => {
+    const p = (f.webkitRelativePath || "").split("/");
+    if (p.length < 3) return;
+    const nm = p[1];
+    if (nm.startsWith(".")) return;
+    const s = sysOfFolder(nm);
+    if (s && (!fo[s] || fo[s] === nm)) {
+      fo[s] = nm;
+      found[s] = 1;
+      items.push({ name: f.name, size: f.size, lastModified: f.lastModified, file: f, sys: s });
+    } else if (!extra.includes(nm)) extra.push(nm);
+  });
+  importFiles(items, e.target, found, extra);
+};
+async function importFiles(e, t, found, extra) {
   if (!e.length && !found) return;
   e = [...e].map(toItem);
   found = found || {};
+  extra = extra || [];
   const a = !$("#app-header").classList.contains("hidden"),
     n = [...new Map(e.filter((o) => ROM_OK(o.name, o.sys)).map((o) => [o.sys + "/" + o.name, o])).values()],
     miss = Object.keys(CONSOLES).filter((k) => !found[k]),
     counts = {};
   n.forEach((o) => (counts[o.sys] = (counts[o.sys] || 0) + 1));
-  const msg = miss.length
-    ? "Dentro da pasta precisa haver 3 pastas com o nome dos consoles: PS1, Mega Drive e Atari. Faltando: " +
-      miss.map((k) => CONSOLES[k].short).join(", ") + "."
+  const parts = [];
+  if (miss.length) parts.push("Faltando: " + miss.map((k) => CONSOLES[k].short).join(", ") + ".");
+  if (extra.length) parts.push("Pasta(s) não permitida(s): " + extra.join(", ") + ".");
+  const msg = parts.length
+    ? "A pasta principal deve ter somente 4 pastas: PS1, PSP, Mega Drive e Atari. " + parts.join(" ")
     : !n.length && !window.__plPend
       ? "Nenhuma ROM compatível foi encontrada nas pastas dos consoles."
       : "";
@@ -845,11 +920,11 @@ async function importFiles(e, t, found) {
   showStep("st-load");
   $("#log").textContent = "> Lendo a pasta...";
   await sleep(600);
-  $("#log").textContent = "> Procurando as pastas dos consoles...";
+  $("#log").textContent = "> Conferindo a estrutura das pastas...";
   await sleep(600);
   if (msg) {
     $("#err-msg").textContent = msg;
-    renderCheck($("#err-chk"), found, counts);
+    renderCheck($("#err-chk"), found, counts, extra);
     showStep("st-err");
     return;
   }
@@ -901,19 +976,21 @@ async function romHandles(e, t = 0, a = [], sys) {
       : n.kind === "directory" && t < 3 && !s.startsWith(".") && (await romHandles(n, t + 1, a, sys));
   return a;
 }
-/* a pasta escolhida precisa ter uma subpasta por console */
+/* a pasta escolhida precisa ter só as subpastas dos consoles */
 async function scanRoot(root) {
   const found = {},
-    items = [];
+    items = [],
+    extra = [];
   for await (const [nm, h] of root.entries())
     if (h.kind === "directory") {
+      if (nm.startsWith(".")) continue;
       const s = sysOfFolder(nm);
       if (s && !found[s]) {
         found[s] = 1;
         (await romHandles(h, 0, [], s)).forEach((x) => items.push(x));
-      }
+      } else extra.push(nm);
     }
-  return { found, items };
+  return { found, items, extra };
 }
 async function pickFolder() {
   if (!window.showDirectoryPicker) {
@@ -929,17 +1006,78 @@ async function pickFolder() {
           return { name: f.name, size: f.size, lastModified: f.lastModified, handle: a, file: f, sys: s };
         }),
       );
-    if (Object.keys(CONSOLES).every((k) => sc.found[k])) {
+    if (Object.keys(CONSOLES).every((k) => sc.found[k]) && !sc.extra.length) {
       ((dirHandle = e), (askedPerm = !0));
       try {
         await idbOp("meta", "readwrite", (a) => a.put(e, "dir"));
       } catch {}
     }
-    await importFiles(t, null, sc.found);
+    await importFiles(t, null, sc.found, sc.extra);
   } catch (e) {
     (!e || e.name !== "AbortError") && showBanner("N\xE3o foi poss\xEDvel abrir a pasta.");
   }
 }
+/* gera um .zip só com as 4 pastas vazias */
+function downloadStructure() {
+  const root = "PlayRom-Jogos",
+    names = ["PS1", "PSP", "Mega Drive", "Atari"],
+    enc = new TextEncoder(),
+    paths = [root + "/", ...names.map((n) => root + "/" + n + "/")],
+    d = new Date(),
+    time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1),
+    date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate(),
+    local = [],
+    central = [];
+  let off = 0,
+    cdSize = 0;
+  paths.forEach((p) => {
+    const nb = enc.encode(p),
+      lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true);
+    lh.setUint16(4, 20, true);
+    lh.setUint16(6, 0x0800, true);
+    lh.setUint16(8, 0, true);
+    lh.setUint16(10, time, true);
+    lh.setUint16(12, date, true);
+    lh.setUint16(26, nb.length, true);
+    local.push(new Uint8Array(lh.buffer), nb);
+
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true);
+    ch.setUint16(4, 20, true);
+    ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0x0800, true);
+    ch.setUint16(10, 0, true);
+    ch.setUint16(12, time, true);
+    ch.setUint16(14, date, true);
+    ch.setUint16(28, nb.length, true);
+    ch.setUint32(38, 0x10, true); /* atributo de diretório */
+    ch.setUint32(42, off, true);
+    central.push(new Uint8Array(ch.buffer), nb);
+
+    off += 30 + nb.length;
+    cdSize += 46 + nb.length;
+  });
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true);
+  end.setUint16(8, paths.length, true);
+  end.setUint16(10, paths.length, true);
+  end.setUint32(12, cdSize, true);
+  end.setUint32(16, off, true);
+  const blob = new Blob([...local, ...central, new Uint8Array(end.buffer)], { type: "application/zip" }),
+    url = URL.createObjectURL(blob),
+    a = document.createElement("a");
+  a.href = url;
+  a.download = "PlayRom-Jogos.zip";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  toast("Estrutura baixada. Extraia o .zip e coloque as ROMs nas pastas");
+}
+document.addEventListener("click", (e) => {
+  e.target.closest("#btn-zip") && downloadStructure();
+});
 async function syncFolder(e) {
   if (!(!dirHandle || syncBusy || document.hidden || document.body.classList.contains("playing"))) {
     syncBusy = !0;
@@ -1126,6 +1264,7 @@ $("#btn-bios-x").onclick = async () => {
       } catch {}
       ((library = []),
         (SYS = null),
+        (homeSub = null),
         delete document.body.dataset.sys,
         favs.clear(),
         saveFavs(),
@@ -1808,7 +1947,7 @@ function playGame(e) {
     tipUpdate(),
     (muted = !1),
     ($("#p-mute").innerHTML = '<i class="fa-solid fa-volume-high"></i>'),
-    $("#ejs-box").style.setProperty("--orig", "1.3333"),
+    $("#ejs-box").style.setProperty("--orig", SYS === "psp" ? "1.7647" : "1.3333"),
     autoOptStart(t.name),
     applyConsoleUI(),
     applyAll(S));
@@ -1819,6 +1958,12 @@ function playGame(e) {
   let n = null;
   const o = async () => {
       if (!current || current !== t) return;
+      if (SYS === "psp" && !window.crossOriginIsolated) {
+        failRom(
+          "O PSP precisa que o site seja servido com os cabeçalhos Cross-Origin-Opener-Policy: same-origin e Cross-Origin-Embedder-Policy: credentialless.",
+        );
+        return;
+      }
       let f;
       let biosPick = "";
       try {
@@ -1836,6 +1981,7 @@ function playGame(e) {
       n = romUrl = URL.createObjectURL(f);
       ((window.EJS_player = "#ejs-host"),
         (window.EJS_core = coreOf(t.name)),
+        (window.EJS_threads = SYS === "psp"),
         (window.EJS_gameName = t.name),
         (window.EJS_gameUrl = romUrl),
         (window.EJS_pathtodata = EJS_PATH),
