@@ -163,15 +163,17 @@
           <p>
             Os jogos <b>não são enviados</b> a nenhum servidor: são lidos do seu computador ou
             celular. O PlayRom.io guarda só neste navegador (IndexedDB e localStorage): configurações,
-            favoritos, saves, nomes dos arquivos e o acesso à sua pasta. Não há conta, cadastro nem
-            rastreamento. Em Configurações > Biblioteca você apaga tudo quando quiser, e limpar os
+            favoritos, saves, nomes dos arquivos e o acesso à sua pasta. Não há conta nem cadastro, e o
+            PlayRom.io não rastreia você (os anúncios de terceiros podem, veja a seção 6). Em Configurações > Biblioteca você apaga tudo quando quiser, e limpar os
             dados do navegador também remove tudo.
           </p>
           <h4>6. Serviços de terceiros</h4>
           <p>
             Ao abrir o site, o seu navegador acessa o CDN do EmulatorJS, o Font Awesome
-            (cdnjs.cloudflare.com) e o Google Fonts. Esses serviços recebem o seu endereço IP, como
-            em qualquer site, e seguem as próprias políticas.
+            (cdnjs.cloudflare.com), o Google Fonts e a rede de anúncios Adsterra (bauval.org), que
+            pode usar cookies e identificadores para exibir publicidade. Esses serviços recebem o
+            seu endereço IP, como em qualquer site, e seguem as próprias políticas. Os anúncios
+            aparecem só nas telas de Jogos e Multiplayer, nunca durante o jogo.
           </p>
           <h4>7. Multiplayer (2 jogadores)</h4>
           <p>
@@ -1480,5 +1482,6 @@
     <script src="app.js"></script>
     <script src="optimizer.js"></script>
     <script src="multiplayer.js"></script>
+    <script src="ads.js"></script>
   </body>
 </html>
