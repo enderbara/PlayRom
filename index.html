@@ -77,8 +77,9 @@
           </p>
           <h4>1. O que é o PlayRom.io</h4>
           <p>
-            O PlayRom.io é um player que roda jogos de PlayStation 1 (PS1) direto no navegador. Ele não
-            vem com jogos nem com BIOS: você usa os seus próprios arquivos.
+            O PlayRom.io é um player que roda jogos de PlayStation 1 (PS1), PSP, Mega Drive e Atari
+            2600 direto no navegador. Ele não vem com jogos nem com BIOS: você usa os seus próprios
+            arquivos.
           </p>
           <h4>2. Créditos e versão do emulador</h4>
           <p>
@@ -163,7 +164,7 @@
       <div class="step-card enter" id="st1">
         <div class="icon-box"><i class="fa-solid fa-gamepad"></i></div>
         <h2 class="step-title">Bem-vindo ao <span class="red">PlayRom</span><span class="io" style="font-size:.55em;font-weight:600;color:#2c2c2c;margin-left:1px">.io</span></h2>
-        <p class="step-desc">Emulação de PlayStation 1, Mega Drive e Atari diretamente no seu navegador.</p>
+        <p class="step-desc">Emulação de PlayStation 1, PSP, Mega Drive e Atari diretamente no seu navegador.</p>
         <button class="btn block" id="btn-start">
           <span>Configurar</span><i class="fa-solid fa-arrow-right"></i>
         </button>
@@ -174,11 +175,17 @@
       <div class="step-card hidden" id="st2">
         <div class="icon-box"><i class="fa-solid fa-folder-tree"></i></div>
         <h2 class="step-title">Selecione a <span class="red">Pasta</span></h2>
-        <p class="step-desc">Escolha a pasta onde ficam seus jogos.</p>
+        <p class="step-desc">
+          Baixe a estrutura de pastas pronta (ou crie as pastas à mão), coloque suas ROMs dentro de
+          cada uma e depois selecione a pasta principal.
+        </p>
         <div class="tree">
-          <div><i class="fa-solid fa-folder-open"></i><span>Pasta dos jogos</span></div>
+          <div><i class="fa-solid fa-folder-open"></i><span>Pasta principal (qualquer nome)</span></div>
           <div style="margin-left: 22px">
             <i class="fa-solid fa-folder"></i><span>PS1</span><span class="tag">.chd .pbp .iso .bin</span>
+          </div>
+          <div style="margin-left: 22px">
+            <i class="fa-solid fa-folder"></i><span>PSP</span><span class="tag">.iso .cso .pbp</span>
           </div>
           <div style="margin-left: 22px">
             <i class="fa-solid fa-folder"></i><span>Mega Drive</span><span class="tag">.md .gen .smd .zip</span>
@@ -187,10 +194,17 @@
             <i class="fa-solid fa-folder"></i><span>Atari</span><span class="tag">.a26 .bin .zip</span>
           </div>
         </div>
-        <p class="step-desc" style="font-size: 0.8rem">
-          As 3 pastas são obrigatórias, com esses nomes. Sem elas o PlayRom.io não aceita.
-        </p>
-        <button class="btn block" id="btn-pick">
+        <div class="warn-box" role="note">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <p>
+            <b>Atenção:</b> são obrigatórias exatamente estas 4 pastas, com esses nomes. Não pode
+            haver nenhuma outra pasta dentro da pasta principal, senão o PlayRom.io não aceita.
+          </p>
+        </div>
+        <button class="btn block ghost" id="btn-zip">
+          <i class="fa-solid fa-download"></i><span>Baixar estrutura de pastas</span>
+        </button>
+        <button class="btn block" id="btn-pick" style="margin-top: 10px">
           <i class="fa-solid fa-folder-plus"></i><span>Selecionar Pasta</span>
         </button>
         <button class="btn block ghost" id="btn-mponly" style="margin-top: 10px">
@@ -760,9 +774,10 @@
             </div>
             <div class="pane" id="pane-sobre">
               <div class="about">
-                <b style="color: #fff">PlayRom.io</b><br />Emulador de PlayStation 1 (PS1) no
-                navegador, com base no <b>EmulatorJS <span class="ejs-v"></span></b> (GPL-3.0),
-                RetroArch e o núcleo PCSX-ReARMed. Seus jogos nunca saem do seu aparelho.
+                <b style="color: #fff">PlayRom.io</b><br />Emulador de PlayStation 1 (PS1), PSP, Mega
+                Drive e Atari 2600 no navegador, com base no
+                <b>EmulatorJS <span class="ejs-v"></span></b> (GPL-3.0), RetroArch e os núcleos de
+                emulação de cada console. Seus jogos nunca saem do seu aparelho.
               </div>
               <div class="row">
                 <div>
