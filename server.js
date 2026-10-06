@@ -3,7 +3,13 @@ const http = require("http"),
   fs = require("fs"),
   path = require("path"),
   crypto = require("crypto");
-const { WebSocketServer } = require("ws");
+/* usa o pacote "ws" se existir; senão cai no mini-ws.js (não precisa de npm install) */
+let WebSocketServer;
+try {
+  ({ WebSocketServer } = require("ws"));
+} catch {
+  ({ WebSocketServer } = require("./mini-ws"));
+}
 if (process.argv.includes("--instalar") || process.argv.includes("--desinstalar")) {
   if (process.platform !== "win32") {
     console.log("O início automático só está disponível no Windows.");
@@ -64,9 +70,12 @@ const ROOT = __dirname;
 const FILES = {
   "index.html": "text/html; charset=utf-8",
   "logo.png": "image/png",
+  "banner1.png": "image/png",
+  "sitemap.xml": "application/xml; charset=utf-8",
   "sw.js": "text/javascript; charset=utf-8",
   "style.css": "text/css; charset=utf-8",
   "app.js": "text/javascript; charset=utf-8",
+  "carrossel.js": "text/javascript; charset=utf-8",
   "multiplayer.js": "text/javascript; charset=utf-8",
   "optimizer.js": "text/javascript; charset=utf-8",
 };
@@ -87,7 +96,15 @@ const server = http.createServer((req, res) => {
     res.end("ok");
     return;
   }
-  let p = decodeURIComponent((req.url || "/").split("?")[0]);
+  let p;
+  try {
+    p = decodeURIComponent((req.url || "/").split("?")[0]);
+  } catch {
+    /* CORREÇÃO: URL malformada (ex.: /%E0%A4%A) derrubava o servidor inteiro */
+    res.writeHead(400);
+    res.end("Bad request");
+    return;
+  }
   p = p === "/" ? "index.html" : path.basename(p);
   const type = FILES[p];
   if (!type) {
@@ -101,7 +118,11 @@ const server = http.createServer((req, res) => {
       res.end("Not found");
       return;
     }
-    res.writeHead(200, { "Content-Type": type, "Cache-Control": "no-cache" });
+    res.writeHead(200, {
+      "Content-Type": type,
+      "Cache-Control": "no-cache",
+      "X-Content-Type-Options": "nosniff",
+    });
     res.end(data);
   });
 });
@@ -179,6 +200,8 @@ wss.on("connection", (ws, req) => {
   ws.room = null;
   ws.sys = "";
   ws.alive = true;
+  ws.win = Date.now();
+  ws.cnt = 0;
   clients.add(ws);
   ws.on("pong", () => {
     ws.alive = true;
@@ -195,6 +218,16 @@ wss.on("connection", (ws, req) => {
   send(ws, { t: "rooms", rooms: listFor(ws.group) });
   send(ws, { t: "online", counts: onlineCounts() });
   ws.on("message", (raw) => {
+    /* limite de mensagens: ~40/s em média. Passou muito disso = cliente com defeito/abusivo */
+    const now = Date.now();
+    if (now - ws.win > 10000) {
+      ws.win = now;
+      ws.cnt = 0;
+    }
+    if (++ws.cnt > 400) {
+      ws.terminate();
+      return;
+    }
     let m;
     try {
       m = JSON.parse(raw);
@@ -243,7 +276,7 @@ wss.on("connection", (ws, req) => {
           id: crypto.randomBytes(4).toString("hex"),
           name,
           game,
-          sys: ["ps1", "md", "atari"].includes(m.sys) ? m.sys : "ps1",
+          sys: SYSK.includes(m.sys) ? m.sys : "ps1",
           max,
           group: ws.group,
           locked: false,
@@ -304,6 +337,7 @@ wss.on("connection", (ws, req) => {
   });
   ws.on("error", () => {});
 });
+/* a cada 30 s: quem não respondeu ao ping da rodada anterior é derrubado */
 setInterval(
   () =>
     wss.clients.forEach((ws) => {
@@ -315,6 +349,9 @@ setInterval(
     }),
   30000,
 );
+/* servidor rodando em segundo plano não deve cair por um erro isolado */
+process.on("uncaughtException", (e) => console.error("Erro:", e && e.stack ? e.stack : e));
+process.on("unhandledRejection", (e) => console.error("Erro:", e));
 server.on("error", (e) => {
   if (e.code === "EADDRINUSE") {
     console.log("O PlayRom.io já está rodando na porta " + PORT + ". Abrindo no navegador...");
@@ -326,13 +363,9 @@ server.on("error", (e) => {
   process.exit(1);
 });
 server.listen(PORT, () => {
-  const ips = Object.values(require("os").networkInterfaces())
-    .flat()
-    .filter((i) => i && i.family === "IPv4" && !i.internal)
-    .map((i) => i.address);
   console.log("PlayRom.io multiplayer rodando.");
   console.log("  Neste computador: http://localhost:" + PORT);
-  ips.forEach((ip) => console.log("  Outros aparelhos na rede: http://" + ip + ":" + PORT));
+  LAN_IPS().forEach((ip) => console.log("  Outros aparelhos na rede: http://" + ip + ":" + PORT));
   console.log("\nDeixe esta janela aberta enquanto estiver jogando. Feche-a para encerrar.");
   openBrowser("http://localhost:" + PORT);
 });
