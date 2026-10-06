@@ -8,6 +8,7 @@
 const crypto = require("crypto");
 const { EventEmitter } = require("events");
 const GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+const MAX_BUFFERED = 4 * 1024 * 1024; // cliente que não lê (lento/travado) é derrubado
 
 class Socket extends EventEmitter {
   constructor(sock, max) {
@@ -17,17 +18,25 @@ class Socket extends EventEmitter {
     this.readyState = 1;
     this.buf = Buffer.alloc(0);
     this.frag = null;
+    this._ct = null;
     sock.setNoDelay(true);
     sock.on("data", (d) => this._data(d));
     sock.on("close", () => this._closed());
     sock.on("error", () => this._closed());
   }
+  get bufferedAmount() {
+    return this.sock.writableLength || 0;
+  }
   _closed() {
     if (this.readyState === 3) return;
     this.readyState = 3;
+    clearTimeout(this._ct);
+    this.buf = Buffer.alloc(0);
+    this.frag = null;
     this.emit("close");
   }
   _write(op, payload) {
+    if (this.readyState === 3) return;
     if (this.readyState !== 1 && op !== 8) return;
     const len = payload.length;
     let head;
@@ -46,6 +55,7 @@ class Socket extends EventEmitter {
     try {
       this.sock.write(Buffer.concat([head, payload]));
     } catch {}
+    if (this.bufferedAmount > MAX_BUFFERED) this.terminate();
   }
   send(data) {
     this._write(1, Buffer.from(String(data)));
@@ -57,16 +67,19 @@ class Socket extends EventEmitter {
     if (this.readyState !== 1) return;
     this.readyState = 2;
     this._write(8, Buffer.alloc(0));
-    setTimeout(() => this.terminate(), 1000);
+    this._ct = setTimeout(() => this.terminate(), 1000);
+    if (this._ct.unref) this._ct.unref();
   }
   terminate() {
-    this.readyState = 3;
+    // CORREÇÃO: antes marcava readyState = 3 aqui, e _closed() saía na 1ª linha
+    // sem emitir "close" (o servidor nunca soube que o cliente caiu).
     try {
       this.sock.destroy();
     } catch {}
     this._closed();
   }
   _data(d) {
+    if (this.readyState === 3) return;
     this.buf = this.buf.length ? Buffer.concat([this.buf, d]) : d;
     for (;;) {
       const b = this.buf;
@@ -105,13 +118,15 @@ class Socket extends EventEmitter {
       if (op === 9) this._write(10, p);
       else if (op === 10) this.emit("pong");
       else if (op === 1 || op === 2 || op === 0) {
-        if (op !== 0) this.frag = { text: op === 1, parts: [] };
+        if (op !== 0) this.frag = { parts: [], size: 0 };
         if (!this.frag) continue;
+        // CORREÇÃO: o limite agora vale para a mensagem inteira, não só por fragmento
+        this.frag.size += p.length;
+        if (this.frag.size > this.max) return this.terminate();
         this.frag.parts.push(p);
         if (fin) {
           const all = Buffer.concat(this.frag.parts);
           this.frag = null;
-          if (all.length > this.max) return this.terminate();
           this.emit("message", all.toString("utf8"));
         }
       }
@@ -123,7 +138,7 @@ class WebSocketServer extends EventEmitter {
   constructor({ server, maxPayload = 64 * 1024 }) {
     super();
     this.clients = new Set();
-    server.on("upgrade", (req, sock) => {
+    server.on("upgrade", (req, sock, head) => {
       const key = req.headers["sec-websocket-key"];
       if (!key || String(req.headers.upgrade).toLowerCase() !== "websocket") {
         sock.destroy();
@@ -140,6 +155,8 @@ class WebSocketServer extends EventEmitter {
       this.clients.add(ws);
       ws.on("close", () => this.clients.delete(ws));
       this.emit("connection", ws, req);
+      // CORREÇÃO: bytes que chegaram junto com o handshake (antes eram perdidos)
+      if (head && head.length) ws._data(head);
     });
   }
 }
