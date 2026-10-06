@@ -9,8 +9,6 @@
     <meta name="theme-color" content="#080808" />
     <title>PlayRom.io</title>
     <script>
-      /* Isolamento de origem (necessário para o PSP): registra o sw.js e
-         recarrega UMA vez quando ele assumir o controle da página. */
       (function () {
         if (window.crossOriginIsolated) return;
         if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
@@ -28,19 +26,18 @@
       })();
     </script>
     <link rel="icon" href="logo.png" />
-    <link rel="preconnect" href="https://emulatorjs.org" crossorigin />
-    <link rel="dns-prefetch" href="https://emulatorjs.org" />
+    <link rel="preconnect" href="https://cdn.emulatorjs.org" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.emulatorjs.org" />
     <link rel="preconnect" href="https://googleapis.com" />
     <link rel="preconnect" href="https://gstatic.com" crossorigin />
     <link
       href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- CORREÇÃO: Adicionado crossorigin="anonymous" para funcionar com o novo sw.js -->
+    <!-- Links de estilos externos carregando com política flexível -->
     <link
       rel="stylesheet"
       href="https://cloudflare.com"
-      crossorigin="anonymous"
     />
     <link rel="stylesheet" href="style.css" />
   </head>
