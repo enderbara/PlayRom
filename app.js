@@ -1301,7 +1301,7 @@ let rafId = 1e9;
   rawRAF(f);
 })();
 ((window.requestAnimationFrame = (e) => {
-  /* CORRIGIDO: o PSP não passa pelo limitador de FPS (SYS === "psp") */
+  /* o PSP não passa pelo limitador de FPS (SYS === "psp") */
   if (!playerEl.classList.contains("show") || !fpsCap || SYS === "psp" || hz <= fpsCap * 1.12)
     return rawRAF((n) => {
       (frames++, e(n));
@@ -1370,6 +1370,10 @@ function layoutInt() {
 new ResizeObserver(() => layoutInt()).observe($("#ejs-box"));
 function applyAll(e) {
   e = autoOptApply(e);
+  /* modo leve no celular: sem filtros pesados de GPU durante o jogo */
+  $("#player").classList.contains("show") &&
+    isMobDev() &&
+    (e = Object.assign({}, e, { perf: !0, scan: 0, vig: 0, sharp: 0 }));
   cur = e;
   const t = $("#ejs-box");
   ((t.dataset.filter = e.filter),
@@ -1789,28 +1793,43 @@ function ldFinish() {
 const EJS_VER = "4.2.3",
   EJS_PATH = "https://cdn.emulatorjs.org/" + EJS_VER + "/data/";
 /* Opções do núcleo PPSSPP otimizadas para rodar em WebAssembly (sem JIT nativo).
-   CORRIGIDO: antes só tinha 6 opções leves; agora força o modo de CPU mais rápido
-   e reduz o peso da GPU. Opções desconhecidas pelo núcleo são ignoradas. */
+   Opções desconhecidas pelo núcleo são ignoradas. */
 const PSP_OPTS = {
-  ppsspp_internal_resolution: "480x272",
-  ppsspp_cpu_core: "IR JIT",
-  ppsspp_fast_memory: "disabled",
-  ppsspp_auto_frameskip: "enabled",
-  ppsspp_frameskip: "1",
-  ppsspp_frameskip_type: "Number of frames",
-  ppsspp_skip_buffer_effects: "enabled",
-  ppsspp_lazy_texture_caching: "enabled",
-  ppsspp_texture_scaling_level: "Off",
-  ppsspp_texture_anisotropic_filtering: "off",
-  ppsspp_texture_filtering: "Auto",
-  ppsspp_spline_quality: "Low",
-  ppsspp_hardware_tesselation: "disabled",
-  ppsspp_lower_resolution_for_effects: "Aggressive",
-  ppsspp_inflight_frames: "Up to 2",
-  ppsspp_io_timing_method: "Fast",
-  ppsspp_vertex_cache: "enabled",
-  ppsspp_software_skinning: "enabled",
-};
+    ppsspp_internal_resolution: "480x272",
+    ppsspp_cpu_core: "IR JIT",
+    ppsspp_fast_memory: "disabled",
+    ppsspp_software_rendering: "disabled",
+    ppsspp_gpu_hardware_transform: "enabled",
+    ppsspp_auto_frameskip: "enabled",
+    ppsspp_frameskip: "1",
+    ppsspp_frameskip_type: "Number of frames",
+    ppsspp_skip_buffer_effects: "enabled",
+    ppsspp_skip_gpu_readbacks: "enabled",
+    ppsspp_lazy_texture_caching: "enabled",
+    ppsspp_texture_scaling_level: "Off",
+    ppsspp_texture_anisotropic_filtering: "off",
+    ppsspp_texture_filtering: "Auto",
+    ppsspp_spline_quality: "Low",
+    ppsspp_hardware_tesselation: "disabled",
+    ppsspp_lower_resolution_for_effects: "Aggressive",
+    ppsspp_inflight_frames: "Up to 2",
+    ppsspp_io_timing_method: "Fast",
+    ppsspp_vertex_cache: "enabled",
+    ppsspp_software_skinning: "enabled",
+  },
+  /* PS1: pula quadros automaticamente quando o aparelho não aguenta e desliga efeitos de áudio/imagem pesados */
+  PS1_OPTS = {
+    pcsx_rearmed_frameskip_type: "auto",
+    pcsx_rearmed_drc: "enabled",
+    pcsx_rearmed_spu_reverb: "disabled",
+    pcsx_rearmed_spu_interpolation: "off",
+    pcsx_rearmed_neon_enhancement_enable: "disabled",
+    pcsx_rearmed_neon_interlace_enable: "disabled",
+  },
+  pspOpts = () =>
+    isMobDev()
+      ? Object.assign({}, PSP_OPTS, { ppsspp_frameskip: "2", ppsspp_texture_filtering: "Nearest" })
+      : PSP_OPTS;
 let scriptEl = null,
   romUrl = null,
   startTimer = null,
@@ -2014,12 +2033,7 @@ function playGame(e) {
         (window.EJS_startOnLoaded = !0),
         (window.EJS_CacheLimit = 1),
         (window.EJS_disableLocalStorage = !0),
-        (window.EJS_defaultOptions =
-          SYS === "ps1"
-            ? { pcsx_rearmed_frameskip_type: "disabled", pcsx_rearmed_drc: "enabled" }
-            : SYS === "psp"
-              ? PSP_OPTS
-              : {}),
+        (window.EJS_defaultOptions = SYS === "ps1" ? PS1_OPTS : SYS === "psp" ? pspOpts() : {}),
         (window.EJS_biosUrl = biosPick || ""),
         (window.EJS_Buttons = {
           playPause: !1,
