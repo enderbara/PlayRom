@@ -346,9 +346,9 @@ window.addEventListener("load", () => {
  * e o navegador faz só o ajuste final ao tamanho da tela. Resultado: pixels
  * bem definidos, sem a borrada da suavização comum.
  * Se algo falhar (quadro vazio), volta sozinho para a imagem normal.
- * Para desligar: troque  enabled: true  por  enabled: false  abaixo.
+ * Desligado por padrão (pesa no aparelho). Para testar: troque  enabled: false  por  enabled: true  abaixo.
  * ===================================================================== */
-const HQ = { enabled: true, failed: false, overlay: null, src: null, ctx: null, ok: false, bad: 0, raf: 0, tiny: null };
+const HQ = { enabled: false, failed: false, overlay: null, src: null, ctx: null, ok: false, bad: 0, raf: 0, tiny: null };
 
 /* A cópia do quadro só funciona se o canvas WebGL do emulador guardar a imagem. */
 (function () {
