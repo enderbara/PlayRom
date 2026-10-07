@@ -322,3 +322,20 @@ window.addEventListener("load", () => {
     persist();
   }
 })();
+
+/* =====================================================================
+ * Menos peso durante o jogo no celular (GPU e CPU livres para o emulador)
+ * ===================================================================== */
+(function () {
+  if (!isMobDev()) return;
+  const st = document.createElement("style");
+  st.textContent =
+    /* nenhuma animação/transição rodando por cima do jogo */
+    "body.playing *{animation-duration:.01s !important;transition-duration:.01s !important}" +
+    /* botões da tela sem sombras (sombra em cima do canvas força composição extra) */
+    "body.playing #pad .pb,body.playing #pad .joy{box-shadow:none !important;text-shadow:none !important}" +
+    "body.playing #pad .pb.down{box-shadow:none !important}" +
+    /* sem desfoque/filtros nos painéis sobre o jogo */
+    "body.playing #fps{animation:none !important}";
+  document.head.appendChild(st);
+})();
