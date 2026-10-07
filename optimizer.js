@@ -47,14 +47,17 @@ const AUTO_OPT_CORE = {
       pcsx_rearmed_neon_interlace_enable: "disabled",
       pcsx_rearmed_dithering: "disabled",
     },
-    2: { pcsx_rearmed_frameskip_type: "auto" },
-    3: {
-      pcsx_rearmed_frameskip_type: "fixed interval",
-      pcsx_rearmed_frameskip_interval: "1",
+    2: {
+      pcsx_rearmed_frameskip_type: "auto",
+      // atalhos de CPU: tiram peso dos picos (menos engasgo no som)
       pcsx_rearmed_nostalls: "enabled",
       pcsx_rearmed_nosmccheck: "enabled",
       pcsx_rearmed_nogteflags: "enabled",
       pcsx_rearmed_gteregsunneeded: "enabled",
+    },
+    3: {
+      pcsx_rearmed_frameskip_type: "fixed interval",
+      pcsx_rearmed_frameskip_interval: "1",
     },
     4: { pcsx_rearmed_frameskip_interval: "2" },
   },
@@ -285,4 +288,37 @@ window.addEventListener("load", () => {
     });
     return originalPlayGame(index);
   };
+})();
+
+/* =====================================================================
+ * Imagem sempre suave no celular (nunca pixelada)
+ * ===================================================================== */
+
+/* Em qualquer chamada do applyAll, no celular o filtro é "smooth" e a escala inteira
+   fica desligada (ela deixa a imagem com bordas duras e faixas pretas). */
+(function () {
+  const originalApplyAll = applyAll;
+  applyAll = function (e) {
+    if (isMobDev()) e = Object.assign({}, e, { filter: "smooth", intScale: false });
+    return originalApplyAll(e);
+  };
+})();
+
+/* CSS que garante a suavização, mesmo que o emulador tente impor pixels. */
+(function () {
+  const st = document.createElement("style");
+  st.textContent =
+    "@media (pointer:coarse){" +
+    "#ejs-box canvas,#ejs-box video,#ejs-box[data-filter] canvas,#ejs-box[data-filter] video{" +
+    "image-rendering:auto !important;image-rendering:-webkit-optimize-contrast !important}}";
+  document.head.appendChild(st);
+})();
+
+/* Corrige o que já estava salvo como "Nítido" no aparelho. */
+(function () {
+  if (isMobDev() && (S.filter !== "smooth" || S.intScale)) {
+    S.filter = "smooth";
+    S.intScale = false;
+    persist();
+  }
 })();
