@@ -299,7 +299,7 @@ window.addEventListener("load", () => {
 (function () {
   const originalApplyAll = applyAll;
   applyAll = function (e) {
-    if (isMobDev()) e = Object.assign({}, e, { filter: "smooth", intScale: false });
+    e = Object.assign({}, e, { filter: "smooth", intScale: false });
     return originalApplyAll(e);
   };
 })();
@@ -308,15 +308,14 @@ window.addEventListener("load", () => {
 (function () {
   const st = document.createElement("style");
   st.textContent =
-    "@media (pointer:coarse){" +
     "#ejs-box canvas,#ejs-box video,#ejs-box[data-filter] canvas,#ejs-box[data-filter] video{" +
-    "image-rendering:auto !important;image-rendering:-webkit-optimize-contrast !important}}";
+    "image-rendering:auto !important}";
   document.head.appendChild(st);
 })();
 
 /* Corrige o que já estava salvo como "Nítido" no aparelho. */
 (function () {
-  if (isMobDev() && (S.filter !== "smooth" || S.intScale)) {
+  if (S.filter !== "smooth" || S.intScale) {
     S.filter = "smooth";
     S.intScale = false;
     persist();
@@ -353,7 +352,6 @@ const HQ = { enabled: true, failed: false, overlay: null, src: null, ctx: null, 
 
 /* A cópia do quadro só funciona se o canvas WebGL do emulador guardar a imagem. */
 (function () {
-  if (!isMobDev()) return;
   const origGetContext = HTMLCanvasElement.prototype.getContext;
   HTMLCanvasElement.prototype.getContext = function (type, attrs) {
     if (HQ.enabled && typeof type === "string" && /webgl/i.test(type)) {
@@ -388,7 +386,8 @@ function hqFrame() {
       HQ.overlay.width = w * k;
       HQ.overlay.height = h * k;
     }
-    HQ.ctx.imageSmoothingEnabled = false;
+    HQ.ctx.imageSmoothingEnabled = true;
+    HQ.ctx.imageSmoothingQuality = "high";
     try {
       HQ.ctx.drawImage(s, 0, 0, w, h, 0, 0, w * k, h * k);
     } catch {}
@@ -452,7 +451,7 @@ function hqFail() {
 }
 
 setInterval(() => {
-  if (!HQ.enabled || HQ.failed || !isMobDev()) return;
+  if (!HQ.enabled || HQ.failed) return;
   const inMp = typeof mp !== "undefined" && mp && mp.on;
   const playing = $("#player").classList.contains("show") && playReady && !inMp;
   if (!playing) {
