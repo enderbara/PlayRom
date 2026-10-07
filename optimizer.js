@@ -339,3 +339,130 @@ window.addEventListener("load", () => {
     "body.playing #fps{animation:none !important}";
   document.head.appendChild(st);
 })();
+
+/* =====================================================================
+ * Imagem mais limpa no celular: "sharp bilinear"
+ * ---------------------------------------------------------------------
+ * Cada quadro do jogo é copiado para um canvas 2x a 3x maior (sem suavizar),
+ * e o navegador faz só o ajuste final ao tamanho da tela. Resultado: pixels
+ * bem definidos, sem a borrada da suavização comum.
+ * Se algo falhar (quadro vazio), volta sozinho para a imagem normal.
+ * Para desligar: troque  enabled: true  por  enabled: false  abaixo.
+ * ===================================================================== */
+const HQ = { enabled: true, failed: false, overlay: null, src: null, ctx: null, ok: false, bad: 0, raf: 0, tiny: null };
+
+/* A cópia do quadro só funciona se o canvas WebGL do emulador guardar a imagem. */
+(function () {
+  if (!isMobDev()) return;
+  const origGetContext = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+    if (HQ.enabled && typeof type === "string" && /webgl/i.test(type)) {
+      attrs = Object.assign({}, attrs, { preserveDrawingBuffer: true });
+    }
+    return origGetContext.call(this, type, attrs);
+  };
+})();
+
+function hqStop(restore) {
+  if (HQ.raf) rawCAF(HQ.raf);
+  HQ.raf = 0;
+  if (HQ.overlay) HQ.overlay.remove();
+  if (restore && HQ.src) HQ.src.style.visibility = "";
+  HQ.overlay = HQ.src = HQ.ctx = null;
+  HQ.ok = false;
+  HQ.bad = 0;
+}
+
+function hqFrame() {
+  if (!HQ.overlay || !HQ.src || !HQ.src.isConnected) {
+    hqStop(false);
+    return;
+  }
+  const s = HQ.src,
+    w = s.width,
+    h = s.height;
+  if (w && h) {
+    const cssW = HQ.overlay.clientWidth || s.clientWidth || w;
+    const k = Math.max(2, Math.min(3, Math.ceil((cssW * (window.devicePixelRatio || 1)) / w)));
+    if (HQ.overlay.width !== w * k || HQ.overlay.height !== h * k) {
+      HQ.overlay.width = w * k;
+      HQ.overlay.height = h * k;
+    }
+    HQ.ctx.imageSmoothingEnabled = false;
+    try {
+      HQ.ctx.drawImage(s, 0, 0, w, h, 0, 0, w * k, h * k);
+    } catch {}
+  }
+  HQ.raf = rawRAF(hqFrame);
+}
+
+function hqStart(src) {
+  const box = $("#ejs-box");
+  const o = document.createElement("canvas");
+  o.dataset.hq = "1";
+  o.style.imageRendering = "auto";
+  o.style.pointerEvents = "none";
+  o.style.opacity = "0"; // só aparece depois de confirmar que a cópia funciona
+  box.appendChild(o);
+  HQ.overlay = o;
+  HQ.src = src;
+  HQ.ctx = o.getContext("2d", { alpha: false });
+  HQ.ok = false;
+  HQ.bad = 0;
+  HQ.raf = rawRAF(hqFrame);
+}
+
+function hqLuma(c) {
+  try {
+    if (!HQ.tiny) {
+      HQ.tiny = document.createElement("canvas");
+      HQ.tiny.width = 16;
+      HQ.tiny.height = 12;
+    }
+    const t = HQ.tiny.getContext("2d", { willReadFrequently: true });
+    t.drawImage(c, 0, 0, 16, 12);
+    const d = t.getImageData(0, 0, 16, 12).data;
+    let n = 0;
+    for (let i = 0; i < d.length; i += 4) n += d[i] + d[i + 1] + d[i + 2];
+    return n;
+  } catch {
+    return -1;
+  }
+}
+
+function hqCheck() {
+  const a = hqLuma(HQ.src),
+    b = hqLuma(HQ.overlay);
+  if (a < 0 || b < 0) {
+    hqFail();
+    return;
+  }
+  if (a < 60) return; // jogo ainda está em tela preta: não dá para concluir
+  if (b >= 60) {
+    HQ.ok = true;
+    HQ.overlay.style.opacity = "1";
+    HQ.src.style.visibility = "hidden";
+  } else if (++HQ.bad >= 3) hqFail();
+}
+
+function hqFail() {
+  hqStop(true);
+  HQ.failed = true;
+  toast("Imagem melhorada indisponível neste aparelho. Usando a normal.", 3500);
+}
+
+setInterval(() => {
+  if (!HQ.enabled || HQ.failed || !isMobDev()) return;
+  const inMp = typeof mp !== "undefined" && mp && mp.on;
+  const playing = $("#player").classList.contains("show") && playReady && !inMp;
+  if (!playing) {
+    if (HQ.overlay) hqStop(false);
+    return;
+  }
+  if (HQ.overlay) {
+    if (!HQ.ok) hqCheck();
+    return;
+  }
+  const src = $$("#ejs-box canvas:not([data-hq])")[0];
+  if (src && src.width > 0) hqStart(src);
+}, 500);
