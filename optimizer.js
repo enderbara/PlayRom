@@ -1,30 +1,34 @@
 "use strict";
 
 /*
- * Otimizador automático do PlayRom.io
- * -----------------------------------
- * 4 níveis, cada um inclui os anteriores:
+ * Otimizador automático do PlayRom.io (versão corrigida)
+ * ------------------------------------------------------
+ * Níveis (cada um inclui os anteriores):
  *   0  Nenhum:   usa as configurações do jogador
- *   1  Leve:     sem efeitos de imagem + opções leves do núcleo (áudio, texturas)
- *   2  Médio:    pulo de quadros automático / 1 quadro
- *   3  Alto:     pulo de quadros fixo + atalhos de velocidade (pode causar pequenos defeitos)
- *   4  Máximo:   pulo de quadros agressivo (a imagem fica menos fluida, mas o jogo mantém a velocidade)
+ *   1  Leve:     sem efeitos de imagem + opções leves do núcleo (áudio, dithering)
+ *   2  Médio:    pulo de quadros automático
+ *   3  Alto:     pulo de quadros fixo + atalhos de velocidade (só nesta partida)
+ *   4  Máximo:   pulo de quadros agressivo (só nesta partida)
  *
- * O nível usado é o MAIOR entre o mínimo manual (S.optMin) e o nível automático.
- * Vigia o FPS: se o jogo ficar lento, sobe de nível (2 níveis de uma vez se estiver MUITO lento,
- * ex.: 2 FPS), avisa na tela e guarda o nível por jogo para abrir já otimizado da próxima vez.
- * Funciona em PS1 e Mega Drive (Atari 2600 só usa o nível 1, pois é muito leve).
+ * Mudanças desta versão:
+ *  - NÃO força mais o filtro "pixel" (a imagem fica suave e bonita em qualquer nível).
+ *  - Só sobe de nível depois de lentidão LONGA (carregamento de disco/FMV não conta).
+ *  - Sobe 1 nível por vez e espera mais entre ajustes.
+ *  - Níveis 3 e 4 NÃO são salvos por jogo (o máximo salvo é o 2).
+ *  - A predefinição "Baixa" usa filtro suave.
+ *  - A taxa de atualização da tela (Hz) é medida de novo fora da splash e a cada jogo.
  */
 
 const AutoOpt = {
   MAX: 4,
   STORE_KEY: "autoOptLevels",
-  LAG_RATIO: 0.75, // abaixo de 75% do FPS esperado = travando
-  SEVERE_RATIO: 0.4, // abaixo de 40% = muito lento: reage mais rápido e sobe 2 níveis
-  LAG_SECONDS: 3, // segundos seguidos de lentidão antes de agir
-  SEVERE_SECONDS: 2, // idem, quando está muito lento
-  GRACE_SECONDS: 6, // tolerância depois que o jogo começa
-  COOLDOWN_SECONDS: 5, // espera depois de cada ajuste antes de medir de novo
+  SAVE_MAX: 2, // maior nível que fica salvo para o jogo
+  LAG_RATIO: 0.7, // abaixo de 70% do FPS esperado = travando
+  SEVERE_RATIO: 0.35, // abaixo de 35% = muito lento
+  LAG_SECONDS: 6, // segundos seguidos de lentidão antes de agir
+  SEVERE_SECONDS: 4, // idem, quando está muito lento
+  GRACE_SECONDS: 15, // tolerância depois que o jogo começa (boot / leitura de disco)
+  COOLDOWN_SECONDS: 10, // espera depois de cada ajuste antes de medir de novo
 
   level: 0,
   game: "",
@@ -73,8 +77,8 @@ const AUTO_OPT_CAP = { ps1: 4, md: 3, atari: 1 };
 const AUTO_OPT_MESSAGES = {
   1: "Jogo travando: desliguei os efeitos visuais (otimização leve).",
   2: "Ainda lento: ativei o pulo de quadros automático (otimização média).",
-  3: "Ainda lento: otimização alta ativada. Alguns jogos podem ter pequenos defeitos.",
-  4: "Ainda lento: otimização máxima ativada. A imagem fica menos fluida, mas o jogo mantém a velocidade. Feche outras abas e apps.",
+  3: "Ainda lento: otimização alta ativada nesta partida. Alguns jogos podem ter pequenos defeitos.",
+  4: "Ainda lento: otimização máxima ativada nesta partida. A imagem fica menos fluida, mas o jogo mantém a velocidade. Feche outras abas e apps.",
 };
 
 function autoOptEnabled() {
@@ -99,10 +103,12 @@ function autoOptSavedLevels() {
   return cfg.get(AutoOpt.STORE_KEY, {}) || {};
 }
 
+/* Salva só níveis suaves (até SAVE_MAX). Níveis 3 e 4 valem apenas nesta partida. */
 function autoOptSave() {
   if (!AutoOpt.game) return;
   const all = autoOptSavedLevels();
-  if (AutoOpt.level > 0) all[AutoOpt.game] = AutoOpt.level;
+  const lv = Math.min(AutoOpt.level, AutoOpt.SAVE_MAX);
+  if (lv > 0) all[AutoOpt.game] = lv;
   else delete all[AutoOpt.game];
   cfg.set(AutoOpt.STORE_KEY, all);
 }
@@ -123,7 +129,8 @@ function autoOptStart(gameName) {
   if (!autoOptEnabled()) return;
 
   const saved = autoOptSavedLevels()[AutoOpt.game];
-  if (saved) AutoOpt.level = Math.min(autoOptCap(), saved);
+  // níveis salvos por versões antigas (3 ou 4) são limitados ao 2
+  if (saved) AutoOpt.level = Math.min(autoOptCap(), saved, AutoOpt.SAVE_MAX);
   else if (autoOptWeakDevice()) AutoOpt.level = SYS === "ps1" ? 1 : 0;
 }
 
@@ -136,10 +143,11 @@ function autoOptReset() {
   AutoOpt.warnedMax = false;
 }
 
-/* Devolve as configurações de vídeo já otimizadas (sem alterar as salvas do jogador). */
+/* Devolve as configurações de vídeo já otimizadas (sem alterar as salvas do jogador).
+   Não força mais o filtro "pixel": a imagem continua como o jogador escolheu. */
 function autoOptApply(settings) {
   if (!autoOptEnabled() || autoOptLevel(settings) < 1) return settings;
-  return Object.assign({}, settings, { perf: true, filter: "pixel" });
+  return Object.assign({}, settings, { perf: true });
 }
 
 /* Muda uma opção do núcleo em execução. */
@@ -166,10 +174,10 @@ function autoOptApplyCore() {
   }
 }
 
-/* Sobe de nível (1 ou 2), aplica e avisa. */
-function autoOptStep(jump) {
+/* Sobe de nível (sempre 1 por vez), aplica e avisa. */
+function autoOptStep() {
   const cap = autoOptCap();
-  AutoOpt.level = Math.min(cap, autoOptLevel() + (jump || 1));
+  AutoOpt.level = Math.min(cap, autoOptLevel() + 1);
   AutoOpt.lagSeconds = 0;
   AutoOpt.wait = AutoOpt.COOLDOWN_SECONDS;
   autoOptSave();
@@ -222,14 +230,59 @@ function autoOptTick(fps) {
   }
 
   if (autoOptLevel() < autoOptCap()) {
-    autoOptStep(severe ? 2 : 1);
+    autoOptStep();
   } else if (!AutoOpt.warnedMax) {
     AutoOpt.warnedMax = true;
-    toast(
-      SYS === "ps1"
-          ? "Já estou no modo mais leve. Se continuar lento, tente selecionar uma BIOS."
-          : "Já estou no modo mais leve. Feche outras abas e apps.",
-      5500,
-    );
+    toast("Já estou no modo mais leve. Feche outras abas e apps.", 5500);
   }
 }
+
+/* =====================================================================
+ * Correções que vivem aqui, para você não precisar editar o app.js
+ * ===================================================================== */
+
+/* 1) Predefinição "Baixa": mantém a imagem suave (antes era pixelada e serrilhada). */
+PRESETS.low.filter = "smooth";
+
+/* 2) Medição confiável da taxa de atualização da tela (Hz).
+      Usa o percentil 10 dos intervalos: travadas só aumentam o intervalo,
+      então o menor valor é o mais próximo do real. */
+function measureHz(frames) {
+  frames = frames || 60;
+  return new Promise((resolve) => {
+    const d = [];
+    let last = 0,
+      n = 0;
+    const step = (t) => {
+      if (last) d.push(t - last);
+      last = t;
+      if (++n < frames) rawRAF(step);
+      else {
+        d.sort((a, b) => a - b);
+        const best = d[Math.floor(d.length * 0.1)] || 16.7;
+        resolve(Math.max(24, Math.min(1000, Math.round(1000 / best))));
+      }
+    };
+    rawRAF(step);
+  });
+}
+
+/* mede de novo depois que a splash terminou (a splash é pesada e distorcia a medida) */
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    measureHz(60).then((v) => {
+      hz = v;
+    });
+  }, 8000);
+});
+
+/* mede a cada jogo aberto, antes de começar o carregamento */
+(function () {
+  const originalPlayGame = playGame;
+  playGame = function (index) {
+    measureHz(45).then((v) => {
+      hz = v;
+    });
+    return originalPlayGame(index);
+  };
+})();
