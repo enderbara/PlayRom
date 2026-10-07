@@ -131,7 +131,7 @@ function autoOptStart(gameName) {
   const saved = autoOptSavedLevels()[AutoOpt.game];
   // níveis salvos por versões antigas (3 ou 4) são limitados ao 2
   if (saved) AutoOpt.level = Math.min(autoOptCap(), saved, AutoOpt.SAVE_MAX);
-  else if (autoOptWeakDevice()) AutoOpt.level = SYS === "ps1" ? 1 : 0;
+  else if (autoOptWeakDevice()) AutoOpt.level = SYS === "ps1" ? 2 : 0; // pulo automático só age quando atrasa; dá folga ao som
 }
 
 /* Chamado quando o jogo sai: limpa o estado. */
